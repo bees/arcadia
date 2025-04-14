@@ -172,6 +172,11 @@
         "ordinal": 33,
         "name": "passkey_lower",
         "type_info": "Int8"
+      },
+      {
+        "ordinal": 34,
+        "name": "test_schema_change",
+        "type_info": "Int4"
       }
     ],
     "parameters": {
@@ -183,6 +188,7 @@
       false,
       false,
       true,
+      false,
       false,
       false,
       false,
