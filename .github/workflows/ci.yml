@@ -41,7 +41,7 @@ jobs:
       run: cargo build
 
     - name: Run tests
-      run: SQLX_OFFLINE=false cargo test
+      run: cargo test
 
     - name: Ensure schema and query metadata are in sync
       run: cargo sqlx prepare --check
