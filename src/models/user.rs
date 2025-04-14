@@ -67,6 +67,7 @@ pub struct User {
     pub settings: serde_json::Value,
     pub passkey_upper: i64,
     pub passkey_lower: i64,
+    pub test_schema_change: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
