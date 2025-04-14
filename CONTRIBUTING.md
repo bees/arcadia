@@ -1,6 +1,6 @@
 First, thanks for considering contributing to Arcadia's devevelopment !
 
-## Developper Setup
+## Developer Setup
 
 Arcadia-index is a [REST](https://en.wikipedia.org/wiki/REST) API written in rust with the [actix](https://github.com/actix/actix-web) framework and the [sqlx](https://github.com/launchbadge/sqlx) database driver.
 
@@ -12,19 +12,25 @@ It (will) also contain some scripts that are meant to be run on a regular basis 
 - [docker](https://docs.docker.com/desktop/setup/install)
 - [insomnia](https://github.com/Kong/insomnia/)
 
-### Env
-Copy `.env.example` to `.env`
+### Environment
+At runtime, Arcadia-index will source environment variables to influence it's behavior.  The simplest way to set these during development is to write them into a file named `.env`.  A documented sample file is made available, so a quick way to get started is to use it by running `cp .env.sample .env`.
 
 ### Database
 
-Arcadia uses a postgresql database.
+Arcadia uses a postgresql database. The recommended method for spawning an instance of postgres is using docker:
 
-The recommended method is using docker:
 ```
 docker-compose -f docker/postgres.yml up -d
 ```
 
-The database schema is created in a migration file `migrations/*_initdb.sql`. It can be ran manually, or with sqlx-cli : `sqlx migrate run`. This command will establish a connection to the database with the details given in `.env` and run the SQL code in the migration file.
+In addition to a database instance, the database needs to be populated with the schema used by Arcadia. Initialization of the database can be done with:
+
+```
+cargo install sqlx-cli
+cargo sqlx database setup
+```
+
+### Test data
 
 You can optionally add "fake" data to the database by running the `fixtures.sql` file in the migrations/fixtures directory. This allows to quickly have data to work with.
 
@@ -34,7 +40,7 @@ Here is how to insert them if you are using docker :
 docker exec -i arcadia_db psql -U arcadia -d arcadia < migrations/fixtures/fixtures.sql
 ```
 
-The default user is :
+The default user defined in the test data is:
 
 ```
 username: picolo
@@ -49,17 +55,21 @@ cargo run
 
 This will start the development server in dev mode.
 
-A swagger for the API is available at `http://localhost:8080/swagger-ui`
-
 ## Code structure
 
 API calls are forwarded to `handlers`, database requests are done by `repositories`, objects are defined by `models`. Directories with those names contain the relevant code.
 
-There is currently no swagger (see [this issue](https://github.com/Arcadia-Solutions/arcadia-index/issues/1)), the routes are defined in `src/routes.rs` and can, for now, easily be browsed.
+A swagger for the API is available at `http://localhost:8080/swagger-ui`
+
+## Testing
+
+Adding additional tests to Arcadia is strongly encouraged, especially when adding new features!  For unit tests, they can be added in the module being tested using standard rust idioms.
+
+End-to-end tests can also be authored, they should be located in `tests/` and use the sqlx test fixture machinery to populate the database for testing.  See `tests/test_auth.rs` for examples.
 
 ## Contributing
 
-Wheter you want to add a new feature or fix an existing issue, it needs to be done on your own branch :
+Whether you want to add a new feature or fix an existing issue, it needs to be done on your own branch :
 
 - fork this repo
 - clone it locally on your computer
