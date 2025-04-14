@@ -34,16 +34,14 @@ jobs:
     - name: setup env
       run: cp -f .env.ci .env
 
-    - name: install sqlx
-      run: cargo install sqlx-cli
-
-    - name: setup database
-      env:
-        DATABASE_URL: postgresql://arcadia:password@arcadiadb:5432/arcadia?schema=public
-      run: cargo sqlx database setup
-
     - name: Build
       run: cargo build
 
     - name: Run tests
       run: cargo test
+
+    - name: install sqlx
+      run: cargo install sqlx-cli
+
+    - name: Ensure schema and query metadata are in sync
+      run: cargo sqlx prepare --check

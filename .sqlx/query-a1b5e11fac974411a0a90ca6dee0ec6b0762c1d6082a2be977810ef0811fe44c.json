@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "WITH torrent_data AS (\n    SELECT \n        t.edition_group_id,\n        jsonb_agg(\n            to_jsonb(t) || jsonb_build_object('uploader', jsonb_build_object('id', u.id, 'username', u.username))\n            ORDER BY t.size DESC\n        ) AS torrents\n    FROM torrents t\n    LEFT JOIN users u ON u.id = t.created_by_id\n    GROUP BY t.edition_group_id\n),\ntorrent_request_data AS (\n    SELECT \n        tr.title_group_id,\n        jsonb_agg(to_jsonb(tr)) AS torrent_requests\n    FROM torrent_requests tr\n    LEFT JOIN users u ON u.id = tr.created_by_id\n    GROUP BY tr.title_group_id\n),\nedition_data AS (\n    SELECT \n        eg.title_group_id,\n        jsonb_agg(\n            to_jsonb(eg) || jsonb_build_object('torrents', COALESCE(td.torrents, '[]'::jsonb))\n            ORDER BY eg.release_date\n        ) AS edition_groups\n    FROM edition_groups eg\n    LEFT JOIN torrent_data td ON td.edition_group_id = eg.id\n    GROUP BY eg.title_group_id\n),\nartist_data AS (\n    SELECT \n        aa.title_group_id,\n        jsonb_agg(\n            to_jsonb(aa) || jsonb_build_object('artist', to_jsonb(a))\n        ) AS affiliated_artists\n    FROM affiliated_artists aa\n    JOIN artists a ON a.id = aa.artist_id\n    GROUP BY aa.title_group_id\n),\ncomment_data AS (\n    SELECT \n        c.title_group_id,\n        jsonb_agg(\n            to_jsonb(c) || jsonb_build_object('created_by', jsonb_build_object('id', u.id, 'username', u.username, 'avatar', u.avatar)) \n            ORDER BY c.created_at\n        ) AS title_group_comments\n    FROM title_group_comments c\n    LEFT JOIN users u ON u.id = c.created_by_id\n    GROUP BY c.title_group_id\n),\nseries_data AS (\n    SELECT \n        tg.id AS title_group_id,\n        jsonb_build_object('name', s.name, 'id', s.id) AS series\n    FROM title_groups tg\n    LEFT JOIN series s ON s.id = tg.series_id\n),\nsubscription_data AS (\n    SELECT \n        id, \n        EXISTS(\n            SELECT 1 \n            FROM title_group_subscriptions tgs \n            WHERE tgs.title_group_id = tg.id \n              AND tgs.subscriber_id = $1\n        ) AS is_subscribed\n    FROM title_groups tg\n)\nSELECT \n    to_jsonb(tg) || jsonb_build_object(\n    'series', COALESCE(sd.series, '{}'::jsonb),\n    'edition_groups', COALESCE(ed.edition_groups, '[]'::jsonb),\n    'affiliated_artists', COALESCE(ad.affiliated_artists, '[]'::jsonb),\n    'title_group_comments', COALESCE(cd.title_group_comments, '[]'::jsonb),\n    'torrent_requests', COALESCE(trd.torrent_requests, '[]'::jsonb),\n    'is_subscribed', COALESCE(sud.is_subscribed, false)\n) AS title_group_data\nFROM title_groups tg\nLEFT JOIN edition_data ed ON ed.title_group_id = tg.id\nLEFT JOIN artist_data ad ON ad.title_group_id = tg.id\nLEFT JOIN comment_data cd ON cd.title_group_id = tg.id\nLEFT JOIN series_data sd ON sd.title_group_id = tg.id\nLEFT JOIN torrent_request_data trd ON trd.title_group_id = tg.id\nLEFT JOIN subscription_data sud ON sud.id = tg.id\nWHERE tg.id = $2;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "title_group_data",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "a1b5e11fac974411a0a90ca6dee0ec6b0762c1d6082a2be977810ef0811fe44c"
+}
