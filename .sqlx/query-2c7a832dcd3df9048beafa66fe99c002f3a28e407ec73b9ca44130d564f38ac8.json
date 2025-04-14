@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    WITH subscriber_ids AS (\n                        SELECT subscriber_id AS user_id\n                        FROM title_group_subscriptions\n                        WHERE title_group_id = $1\n                    )\n                    INSERT INTO notifications (receiver, title, message, notification_type, item_id)\n                    SELECT\n                        user_id,\n                        $2,\n                        $3,\n                        'TitleGroup'::notification_item_enum,\n                        $1\n                    FROM subscriber_ids\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2c7a832dcd3df9048beafa66fe99c002f3a28e407ec73b9ca44130d564f38ac8"
+}

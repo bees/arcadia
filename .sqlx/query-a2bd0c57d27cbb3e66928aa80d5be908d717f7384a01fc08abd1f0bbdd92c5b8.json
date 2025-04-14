@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH title_group_data AS (\n                SELECT\n                    tg.series_id,\n                    jsonb_agg(\n                        to_jsonb(tg) || jsonb_build_object(\n                            'edition_groups', (\n                                SELECT COALESCE(jsonb_agg(\n                                    to_jsonb(eg) || jsonb_build_object(\n                                        'torrents', (\n                                            SELECT COALESCE(jsonb_agg(to_jsonb(t)), '[]'::jsonb)\n                                            FROM torrents t\n                                            WHERE t.edition_group_id = eg.id\n                                        )\n                                    )\n                                ), '[]'::jsonb)\n                                FROM edition_groups eg\n                                WHERE eg.title_group_id = tg.id\n                            )\n                        )\n                    ) AS title_groups\n                FROM title_groups tg\n                WHERE tg.series_id = $1\n                GROUP BY tg.series_id\n            )\n            SELECT jsonb_build_object(\n                'series', to_jsonb(s),\n                'title_groups', COALESCE(tg_data.title_groups, '[]'::jsonb)\n            ) AS series_and_groups\n            FROM series s\n            LEFT JOIN title_group_data tg_data ON tg_data.series_id = s.id\n            WHERE s.id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "series_and_groups",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "a2bd0c57d27cbb3e66928aa80d5be908d717f7384a01fc08abd1f0bbdd92c5b8"
+}

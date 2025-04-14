@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    INSERT INTO title_group_subscriptions (title_group_id, subscriber_id)\n                    VALUES ($1, $2)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8411e1ff0a90c7e160d6c73b11c7b75fdbdb89ff260061858511a7949ef8bd3e"
+}

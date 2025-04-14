@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT jsonb_build_object(\n    'id', tg.id, 'content_type', tg.content_type, 'name', tg.name,\n    'edition_groups', COALESCE(\n        jsonb_agg(\n            jsonb_build_object(\n                'id', eg.id,\n                'name', eg.name,\n                'release_date', eg.release_date,\n                'distributor', eg.distributor,\n                'source', eg.source,\n                'additional_information', eg.additional_information\n            )\n        ) FILTER (WHERE eg.id IS NOT NULL), \n        '[]'::jsonb\n    )\n)\nFROM title_groups tg\nLEFT JOIN edition_groups eg ON eg.title_group_id = tg.id\nWHERE tg.id = $1\nGROUP BY tg.id;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "jsonb_build_object",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "ef58e7efa9c7fae5be355d28ccd7fa4333c295e20f501525908ec215f18b59ff"
+}

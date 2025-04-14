@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n           WITH title_group_search AS (\n    SELECT\n        id AS title_group_id,\n        CASE\n            WHEN $1 = '' THEN NULL\n            ELSE ts_rank_cd(to_tsvector('simple', name || ' ' || coalesce(array_to_string(name_aliases, ' '), '')), plainto_tsquery('simple', $1))\n        END AS relevance\n    FROM title_groups\n    WHERE $1 = '' OR to_tsvector('simple', name || ' ' || coalesce(array_to_string(name_aliases, ' '), '')) @@ plainto_tsquery('simple', $1)\n),\ntitle_group_data AS (\n    SELECT\n        jsonb_build_object(\n            'id', tg.id,\n            'name', tg.name,\n            'covers', tg.covers,\n            'category', tg.category,\n            'content_type', tg.content_type,\n            'tags', tg.tags,\n            'original_release_date', tg.original_release_date,\n            'affiliated_artists', COALESCE((\n                SELECT jsonb_agg(\n                    jsonb_build_object(\n                        'id', ar.id,\n                        'name', ar.name\n                    )\n                )\n                FROM affiliated_artists aa\n                JOIN artists ar ON aa.artist_id = ar.id\n                WHERE aa.title_group_id = tg.id\n            ), '[]'::jsonb),\n            'edition_groups', (\n                SELECT COALESCE(jsonb_agg(\n                    jsonb_build_object(\n                        'id', eg.id,\n                        'title_group_id', eg.title_group_id,\n                        'name', eg.name,\n                        'release_date', eg.release_date,\n                        'distributor', eg.distributor,\n                        'covers', eg.covers,\n                        'source', eg.source,\n                        'additional_information', eg.additional_information,\n                        'torrents', (\n                            SELECT COALESCE(jsonb_agg(\n                                jsonb_build_object(\n                                    'id', t.id,\n                                    'edition_group_id', t.edition_group_id,\n                                    'created_at', t.created_at,\n                                    'release_name', t.release_name,\n                                    'file_amount_per_type', t.file_amount_per_type,\n                                    'trumpable', t.trumpable,\n                                    'staff_checked', t.staff_checked,\n                                    'language', t.language,\n                                    'container', t.container,\n                                    'size', t.size,\n                                    'duration', t.duration,\n                                    'audio_codec', t.audio_codec,\n                                    'audio_bitrate', t.audio_bitrate,\n                                    'audio_bitrate_sampling', t.audio_bitrate_sampling,\n                                    'audio_channels', t.audio_channels,\n                                    'video_codec', t.video_codec,\n                                    'features', t.features,\n                                    'subtitle_languages', t.subtitle_languages,\n                                    'video_resolution', t.video_resolution\n                                )\n                            ), '[]'::jsonb)\n                            FROM torrents t\n                            WHERE t.edition_group_id = eg.id\n                        )\n                    )\n                ), '[]'::jsonb)\n                FROM edition_groups eg\n                WHERE eg.title_group_id = tg.id\n            )\n        ) AS lite_title_group,\n        CASE\n            WHEN $1 = '' THEN EXTRACT(EPOCH FROM tg.created_at)\n            ELSE tgs.relevance\n        END AS sort_order\n    FROM title_groups tg\n    JOIN title_group_search tgs ON tg.id = tgs.title_group_id\n)\nSELECT jsonb_agg(lite_title_group ORDER BY sort_order DESC) AS title_groups\nFROM title_group_data;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "title_groups",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "092e017abbc2859a7fb1db9090e044e9dce064f0722cef5830b172adcc8ac195"
+}
