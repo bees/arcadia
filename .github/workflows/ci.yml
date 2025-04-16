@@ -10,11 +10,25 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  TARGET_NAME: ${{ github.base_ref }}
+
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs: 
+      backend: ${{ steps.backend.outputs.should-run }}
+    steps:
+      - name: Check if backend jobs should run
+        id: backend
+        run: if [ "$(git diff --name-only $TARGET_REF | grep ^backend | wc -l)" -gt "0"]; then echo "should-run=true" >> $GITHUB_OUTPUT; fi
+
+
   build-backend:
     runs-on: ubuntu-latest
     container: rust:1.86-bullseye
+    needs: detect-changes
+    if: needs.detect-changes.outputs.should-run == 'true'
     defaults:
       run:
         working-directory: ./backend
@@ -56,6 +70,8 @@ jobs:
         working-directory: ./frontend
     steps:
     - uses: actions/checkout@v4
+
+    - run: git diff --name-status  -- path/to/directory/
 
     - name: Setup
       uses: actions/setup-node@v4
