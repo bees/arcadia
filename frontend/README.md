@@ -10,5 +10,3 @@ This is the client (frontend) of the Arcadia project.
 
 For contributions see [CONTRIBUTING.md](CONTRIBUTING.md)
 
-
-test
