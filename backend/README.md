@@ -14,3 +14,5 @@ For contributions see [CONTRIBUTING.md](CONTRIBUTING.md)
 - This is not ready for production. Setup instructions are not yet available.
 
 - The current auth mechanism relies on an actix extractor, which is the user provider. Everytime a handler accesses the current user, the authentication takes place. This might be replaced by a middleware in the future.
+
+DELETEME: twiddle
