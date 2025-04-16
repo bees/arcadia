@@ -7,11 +7,11 @@ on:
   pull_request:
     branches:
       - main
-    paths:
+    paths: # comment this out if you are updating actions and need to test
       - 'frontend/**'
 
 jobs:
-  lint-format-frontend:
+  check-lint-format:
     runs-on: ubuntu-latest
     defaults:
       run:
