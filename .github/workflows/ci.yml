@@ -22,10 +22,10 @@ jobs:
     steps:
       - name: Check if backend jobs should run
         id: backend
-        run: if [ "$(git diff --name-only $TARGET_REF | grep ^backend | wc -l)" -gt "0"]; then echo "should-run=true" >> $GITHUB_OUTPUT; fi
+        run: if [ "$(git diff --name-only ${{ github.base_ref }} | grep ^backend | wc -l)" -gt "0"]; then echo "should-run=true" >> $GITHUB_OUTPUT; fi
       - name: Check if frontend jobs should run
         id: frontend
-        run: if [ "$(git diff --name-only $TARGET_REF | grep ^frontend | wc -l)" -gt "0"]; then echo "should-run=true" >> $GITHUB_OUTPUT; fi
+        run: if [ "$(git diff --name-only ${{ github.base_ref }} | grep ^frontend | wc -l)" -gt "0"]; then echo "should-run=true" >> $GITHUB_OUTPUT; fi
 
 
   build-backend:
