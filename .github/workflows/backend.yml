@@ -1,0 +1,54 @@
+name: backend jobs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: rust:1.86-bullseye
+    defaults:
+      run:
+        working-directory: ./backend
+
+    services:
+      arcadiadb:
+        image: postgres
+        env:
+          POSTGRES_USER: arcadia
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: setup env
+      run: cp -f .env.ci .env
+
+    - name: Build
+      run: cargo build
+
+    - name: Run tests
+      run: cargo test
+
+    - name: install sqlx
+      run: cargo install sqlx-cli
+
+    - name: Ensure schema and query metadata are in sync
+      run: cargo sqlx prepare --check
+
