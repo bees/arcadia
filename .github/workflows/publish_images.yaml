@@ -5,9 +5,6 @@ on:
     types: [ published ]
 
 jobs:
-  defaults:
-    run:
-      working-directory: ./backend
   push_to_registry:
     name: Push container image to GHCR
     runs-on: ubuntu-latest
@@ -24,3 +21,5 @@ jobs:
         with:
           image_name: ${{ github.repository }}  
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: ./backend/Dockerfile
+          context: ./backend
