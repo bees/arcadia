@@ -17,10 +17,10 @@ At runtime, arcadia's backend will source environment variables to influence it'
 
 ### Database
 
-Arcadia's backend uses a postgresql database. The recommended method for spawning an instance of postgres is using docker:
+Arcadia's backend uses a postgresql database. The recommended method for spawning an instance of postgres is using docker compose:
 
 ```
-docker-compose -f docker/postgres.yml up -d
+docker-compose up db -d
 ```
 
 In addition to a database instance, the database needs to be populated with the schema used by Arcadia. Initialization of the database can be done with:
@@ -30,6 +30,8 @@ cargo install sqlx-cli
 cargo sqlx database setup
 ```
 
+Note: if you are using the included docker compose service, the database will be initialized the first time the container is created.
+
 ### Test data
 
 You can optionally add "fake" data to the database by running the `fixtures.sql` file in the migrations/fixtures directory. This allows to quickly have data to work with.
@@ -37,7 +39,8 @@ You can optionally add "fake" data to the database by running the `fixtures.sql`
 Here is how to insert them if you are using docker :
 
 ```
-docker exec -i arcadia_db psql -U arcadia -d arcadia < migrations/fixtures/fixtures.sql
+
+docker exec -i arcadia_db psql -U arcadia -d arcadia < backend/migrations/fixtures/fixtures.sql
 ```
 
 The default user defined in the test data is:

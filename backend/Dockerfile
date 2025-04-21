@@ -14,4 +14,4 @@ COPY . .
 
 RUN SQLX_OFFLINE=true cargo build --release
 
-CMD ["arcadia-index"]
+CMD ["./arcadia-index"]

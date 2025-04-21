@@ -6,6 +6,8 @@ First, thanks for considering contributing to Arcadia !
 
 - [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - [prettier](https://prettier.io)
+- [docker](https://docs.docker.com/engine/install/) (or equivalent, e.g. podman, orbstack)
+
 
 ### Run the project :
 
@@ -22,6 +24,25 @@ npm run dev
 ```
 
 This will launch a local server for the frontend
+
+Launch the backend:
+```
+# from the project root
+docker-compose up -d
+```
+
+Please note that this will perform a build the first time the command is run, which may take a while. Changes to the Dockerfile or backend files will not trigger a rebuild. If you want to pull in new changes, run:
+
+```
+docker-compose up --build
+```
+
+Database migrations will run by default when the container is first initialized. This step will be skipped if the `volumes` directory is populated. Fixtures can be created by running:
+
+```
+docker exec -i arcadia_db psql -U arcadia -d arcadia < backend/migrations/fixtures/fixtures.sql
+```
+
 
 ## Contributing
 

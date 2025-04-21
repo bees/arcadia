@@ -17,7 +17,11 @@ use arcadia_index::{Arcadia, Error, OpenSignups, Result, api_doc::ApiDoc};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenvy::dotenv().expect("Failed to load .env");
+    if let Ok(env_path) = dotenvy::dotenv() {
+        println!("Loading environment from {}", env_path.display());
+    } else {
+        println!("No .env present");
+    }
 
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("debug"));
 
