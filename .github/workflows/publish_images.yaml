@@ -1,6 +1,9 @@
 name: Publish container image
 
 on:
+  pull_request:
+    branches:
+      - update-image-publish
   release:
     types: [ published ]
 
