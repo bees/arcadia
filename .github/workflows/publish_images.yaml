@@ -8,12 +8,12 @@ on:
     types: [ published ]
 
 jobs:
-  defaults:
-    run:
-      working-directory: ./backend
   push_to_registry:
     name: Push container image to GHCR
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     permissions:
       packages: write
       contents: read
