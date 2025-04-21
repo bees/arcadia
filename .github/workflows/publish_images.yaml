@@ -5,6 +5,9 @@ on:
     types: [ published ]
 
 jobs:
+  defaults:
+    run:
+      working-directory: ./backend
   push_to_registry:
     name: Push container image to GHCR
     runs-on: ubuntu-latest
