@@ -3,7 +3,7 @@ name: Publish container image
 on:
   pull_request:
     branches:
-      - update-image-publish
+      - main
   release:
     types: [ published ]
 
