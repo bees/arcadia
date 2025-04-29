@@ -297,7 +297,7 @@ import { uploadTorrent, type Torrent, type UploadedTorrent } from '@/services/ap
 import { useTitleGroupStore } from '@/stores/titleGroup'
 import { useI18n } from 'vue-i18n'
 
-const torrentFile = ref({ files: [] })
+const torrentFile = ref({ files: [] as unknown[] })
 const step = ref(1)
 const torrentForm = ref({
   edition_group_id: '',
