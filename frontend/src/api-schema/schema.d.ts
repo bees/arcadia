@@ -116,6 +116,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/peers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_user_peers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/register": {
         parameters: {
             query?: never;
@@ -514,6 +530,20 @@ export interface components {
             name?: string | null;
             /** Format: date-time */
             updated_at: string;
+        };
+        Peer: {
+            /** Format: date-time */
+            first_seen_at: string;
+            /** Format: 0.0.0.0 */
+            ip: string;
+            /** Format: date-time */
+            last_seen_at: string;
+            /** Format: int32 */
+            port: number;
+            /** Format: int64 */
+            real_downloaded: number;
+            /** Format: int64 */
+            real_uploaded: number;
         };
         /** @enum {string} */
         Platform: "Windows" | "Linux" | "MacOS" | "Xbox";
@@ -1365,6 +1395,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
+    get_user_peers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved peer list */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Peer"][];
                 };
             };
         };

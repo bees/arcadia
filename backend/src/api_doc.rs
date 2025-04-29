@@ -37,6 +37,7 @@ use crate::{
         crate::handlers::edition_group_handler::add_edition_group,
         crate::handlers::invitation_handler::send_invitation,
         crate::handlers::master_group_handler::add_master_group,
+        crate::handlers::peers_handler::get_user_peers,
         crate::handlers::series_handler::add_series,
         crate::handlers::series_handler::get_series,
         crate::handlers::subscriptions_handler::add_subscription,

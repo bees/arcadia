@@ -4,6 +4,7 @@ pub mod auth_handler;
 pub mod edition_group_handler;
 pub mod invitation_handler;
 pub mod master_group_handler;
+pub mod peers_handler;
 pub mod scrapers;
 pub mod series_handler;
 pub mod subscriptions_handler;

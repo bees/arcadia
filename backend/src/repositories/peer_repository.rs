@@ -1,6 +1,31 @@
 use sqlx::{PgPool, types::ipnetwork::IpNetwork};
 
-use crate::tracker::announce::{self, Announce, Peer};
+use crate::{
+    models,
+    tracker::announce::{self, Announce, Peer},
+};
+
+pub async fn get_user_peers(pool: &PgPool, user_id: i64) -> Vec<models::peer::Peer> {
+    sqlx::query_as!(
+        models::peer::Peer,
+        r#"
+                SELECT
+                    ip,
+                    port,
+                    MIN(first_seen_at) as "first_seen_at!",
+                    MAX(last_seen_at) as "last_seen_at!",
+                    SUM(real_uploaded)::BIGINT as "real_uploaded!",
+                    SUM(real_downloaded)::BIGINT as "real_downloaded!"
+                FROM peers
+                WHERE user_id = $1
+                GROUP BY (peer_id, ip, port)
+            "#,
+        user_id
+    )
+    .fetch_all(pool)
+    .await
+    .expect("failed to retrieve peers")
+}
 
 pub async fn remove_peer(
     pool: &PgPool,
@@ -13,7 +38,7 @@ pub async fn remove_peer(
         r#"
             DELETE FROM peers WHERE
             (torrent_id, peer_id, ip, port) = ($1, $2, $3, $4)
-            "#,
+        "#,
         torrent_id,
         peer_id,
         ip,
