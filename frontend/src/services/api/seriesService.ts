@@ -3,8 +3,7 @@ import api from './api.ts'
 
 export type SeriesAndTitleGroupHierarchyLite =
   components['schemas']['SeriesAndTitleGroupHierarchyLite']
-export type TitleGroupHierarchyLite =
-  components["schemas"]["TitleGroupHierarchyLite"]
+export type TitleGroupHierarchyLite = components['schemas']['TitleGroupHierarchyLite']
 export type Series = components['schemas']['Series']
 
 export const getSeries = async (id: number): Promise<SeriesAndTitleGroupHierarchyLite> => {

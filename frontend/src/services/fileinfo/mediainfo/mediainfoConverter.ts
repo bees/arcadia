@@ -2,7 +2,7 @@ import { uniq, compact } from 'lodash-es'
 import { AUDIO_OPTION, VIDEO_OPTION } from '../utils'
 import type { ParseResult } from './mediainfoParser'
 
-type Resolution = string | [string, string];
+type Resolution = string | [string, string]
 
 export default class MediainfoConverter {
   convert(info: ParseResult) {
@@ -90,7 +90,7 @@ export default class MediainfoConverter {
 
   extractContainer(info: ParseResult, resolution: Resolution) {
     const format = info['general']['format']
-    if (!Array.isArray(resolution) && (['PAL', 'NTSC'].includes(resolution))) {
+    if (!Array.isArray(resolution) && ['PAL', 'NTSC'].includes(resolution)) {
       return 'VOB IFO'
     }
 
@@ -154,16 +154,18 @@ export default class MediainfoConverter {
     const standard = video['standard']
     const scanType = video['scan type']
 
-    const width = Number(video.width && (video.width.match(/[0-9 ]+/)?.[0].replace(/ /g, '') ?? ''));
-    const height = Number(video.height && (video.height.match(/[0-9 ]+/)?.[0].replace(/ /g, '') ?? ''));
+    const width = Number(video.width && (video.width.match(/[0-9 ]+/)?.[0].replace(/ /g, '') ?? ''))
+    const height = Number(
+      video.height && (video.height.match(/[0-9 ]+/)?.[0].replace(/ /g, '') ?? ''),
+    )
 
     // 1920x567 -> 1080p
     let resolution: string | [string, string] =
       /2160p/i.test(completeName) || width === 3840
         ? '2160p'
         : /1080i/i.test(completeName) ||
-          ((width === 1920 || (Number(width) < 1920 && height === 1080)) &&
-            (scanType === 'Interlaced' || scanType === 'MBAFF'))
+            ((width === 1920 || (Number(width) < 1920 && height === 1080)) &&
+              (scanType === 'Interlaced' || scanType === 'MBAFF'))
           ? '1080i'
           : /1080p/i.test(completeName) || width === 1920 || (width < 1920 && height === 1080)
             ? '1080p'

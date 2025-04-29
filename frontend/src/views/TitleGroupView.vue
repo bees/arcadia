@@ -1,29 +1,52 @@
 <template>
   <!-- TODO: use skeletons while the data is loading -->
-  <div v-if="title_group" id="title-group-view" :class="{
-    'sidebar-right': userStore.settings.site_appearance.item_detail_layout == 'sidebar_right',
-    'sidebar-left': userStore.settings.site_appearance.item_detail_layout == 'sidebar_left',
-  }">
-    <div :class="{
-      main: true,
-      'with-sidebar': userStore.settings.site_appearance.item_detail_layout.includes('sidebar'),
-    }">
-      <TitleGroupFullHeader :title_group v-if="userStore.settings.site_appearance.item_detail_layout == 'header'" />
+  <div
+    v-if="title_group"
+    id="title-group-view"
+    :class="{
+      'sidebar-right': userStore.settings.site_appearance.item_detail_layout == 'sidebar_right',
+      'sidebar-left': userStore.settings.site_appearance.item_detail_layout == 'sidebar_left',
+    }"
+  >
+    <div
+      :class="{
+        main: true,
+        'with-sidebar': userStore.settings.site_appearance.item_detail_layout.includes('sidebar'),
+      }"
+    >
+      <TitleGroupFullHeader
+        :title_group
+        v-if="userStore.settings.site_appearance.item_detail_layout == 'header'"
+      />
       <TitleGroupSlimHeader v-else :title_group class="slim-header" />
       <div class="actions">
         <div>
-          <i v-if="title_group.is_subscribed" v-tooltip.top="$t('general.unsubscribe')" @click="unsubscribe"
-            class="pi pi-bell-slash" />
+          <i
+            v-if="title_group.is_subscribed"
+            v-tooltip.top="$t('general.unsubscribe')"
+            @click="unsubscribe"
+            class="pi pi-bell-slash"
+          />
           <i v-else v-tooltip.top="$t('general.subscribe')" @click="subscribe" class="pi pi-bell" />
           <i v-tooltip.top="$t('general.bookmark')" class="pi pi-bookmark" />
         </div>
         <div>
           <i v-tooltip.top="$t('general.edit')" class="pi pi-pen-to-square" />
-          <i @click="uploadTorrent" v-tooltip.top="$t('torrent.upload_torrent')" class="pi pi-upload" />
+          <i
+            @click="uploadTorrent"
+            v-tooltip.top="$t('torrent.upload_torrent')"
+            class="pi pi-upload"
+          />
           <i v-tooltip.top="$t('torrent.request_format')" class="pi pi-shopping-cart" />
         </div>
         <FloatLabel class="sort-by-select" variant="on">
-          <Select v-model="sortBy" inputId="sort_by" :options="selectableSortingOptions" class="select" size="small">
+          <Select
+            v-model="sortBy"
+            inputId="sort_by"
+            :options="selectableSortingOptions"
+            class="select"
+            size="small"
+          >
             <template #option="slotProps">
               <span>{{ $t(`torrent.${slotProps.option}`) }}</span>
             </template>
@@ -35,21 +58,34 @@
         </FloatLabel>
       </div>
       <TitleGroupTable :title_group="title_group" :sortBy :preview="false" />
-      <ContentContainer :container-title="$t('general.screenshots')" class="screenshots"
-        v-if="title_group.screenshots.length !== 0">
+      <ContentContainer
+        :container-title="$t('general.screenshots')"
+        class="screenshots"
+        v-if="title_group.screenshots.length !== 0"
+      >
         <CustomGalleria :images="title_group.screenshots" />
       </ContentContainer>
-      <Accordion v-if="title_group.torrent_requests.length != 0" value="0" class="torrent-requests dense-accordion">
+      <Accordion
+        v-if="title_group.torrent_requests.length != 0"
+        value="0"
+        class="torrent-requests dense-accordion"
+      >
         <AccordionPanel value="0">
-          <AccordionHeader>{{ $t('torrent.requests') }} ({{
-            title_group.torrent_requests.length
-            }})</AccordionHeader>
+          <AccordionHeader
+            >{{ $t('torrent.requests') }} ({{
+              title_group.torrent_requests.length
+            }})</AccordionHeader
+          >
           <AccordionContent>
             <TorrentRequestsTable :torrentRequests="title_group.torrent_requests" />
           </AccordionContent>
         </AccordionPanel>
       </Accordion>
-      <ContentContainer class="description" v-if="title_group" :container-title="$t('title_group.description')">
+      <ContentContainer
+        class="description"
+        v-if="title_group"
+        :container-title="$t('title_group.description')"
+      >
         <div class="title-group-description">
           {{ title_group.description }}
         </div>
@@ -62,7 +98,10 @@
       </ContentContainer>
       <GeneralComments :comments="title_group.title_group_comments" />
     </div>
-    <div class="sidebar" v-if="userStore.settings.site_appearance.item_detail_layout.includes('sidebar')">
+    <div
+      class="sidebar"
+      v-if="userStore.settings.site_appearance.item_detail_layout.includes('sidebar')"
+    >
       <TitleGroupSidebar :title_group />
     </div>
   </div>

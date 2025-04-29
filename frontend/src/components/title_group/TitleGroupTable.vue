@@ -1,30 +1,51 @@
 <template>
-  <DataTable v-model:expandedRows="expandedRows" :value="title_group.edition_groups.flatMap(
-    (edition_group: EditionGroupHierarchyLite) => edition_group.torrents,
-  )
-    " rowGroupMode="subheader" :groupRowsBy="isGrouped ? 'edition_group_id' : undefined" sortMode="single"
-    :sortField="sortBy == 'edition' ? '' : sortBy" :sortOrder="1" tableStyle="min-width: 50rem" size="small"
-    :pt="{ rowGroupHeaderCell: { colspan: 8 } }">
+  <DataTable
+    v-model:expandedRows="expandedRows"
+    :value="
+      title_group.edition_groups.flatMap(
+        (edition_group: EditionGroupHierarchyLite) => edition_group.torrents,
+      )
+    "
+    rowGroupMode="subheader"
+    :groupRowsBy="isGrouped ? 'edition_group_id' : undefined"
+    sortMode="single"
+    :sortField="sortBy == 'edition' ? '' : sortBy"
+    :sortOrder="1"
+    tableStyle="min-width: 50rem"
+    size="small"
+    :pt="{ rowGroupHeaderCell: { colspan: 8 } }"
+  >
     <Column expander style="width: 1em" v-if="!preview" />
     <Column style="width: 1em" v-else />
     <Column :header="$t('torrent.properties')" style="min-width: 300px">
       <template #body="slotProps">
-        <a :href="preview ? `/title-group/${title_group.id}?torrentId=${slotProps.data.id}` : undefined
-          " @click="preview ? null : toggleRow(slotProps.data)" class="cursor-pointer">
+        <a
+          :href="
+            preview ? `/title-group/${title_group.id}?torrentId=${slotProps.data.id}` : undefined
+          "
+          @click="preview ? null : toggleRow(slotProps.data)"
+          class="cursor-pointer"
+        >
           <span v-if="slotProps.data.container && title_group.content_type != 'music'">{{
             slotProps.data.container
-            }}</span>
+          }}</span>
           <span v-if="slotProps.data.video_codec"> / {{ slotProps.data.video_codec }}</span>
           <span v-if="slotProps.data.video_resolution">
-            / {{ slotProps.data.video_resolution }}</span>
+            / {{ slotProps.data.video_resolution }}</span
+          >
           <span v-if="slotProps.data.audio_codec">
-            <span v-if="title_group.content_type != 'music'">/ </span>{{ slotProps.data.audio_codec }}</span>
+            <span v-if="title_group.content_type != 'music'">/ </span
+            >{{ slotProps.data.audio_codec }}</span
+          >
           <span v-if="slotProps.data.audio_channels"> / {{ slotProps.data.audio_channels }}</span>
           <span v-if="slotProps.data.audio_bitrate_sampling">
-            / {{ slotProps.data.audio_bitrate_sampling }}</span>
-          <span v-if="
-            slotProps.data.languages.length === 1 && slotProps.data.languages[0] !== 'English'
-          ">
+            / {{ slotProps.data.audio_bitrate_sampling }}</span
+          >
+          <span
+            v-if="
+              slotProps.data.languages.length === 1 && slotProps.data.languages[0] !== 'English'
+            "
+          >
             / {{ slotProps.data.languages[0] }}
           </span>
           <span v-if="slotProps.data.languages.length > 1"> / Multi-Language </span>
@@ -48,9 +69,16 @@
     </Column>
     <Column header="">
       <template #body="slotProps">
-        <i v-tooltip.top="$t('torrent.download')" class="action pi pi-download"
-          @click="downloadTorrent(slotProps.data.id)" />
-        <i v-tooltip.top="$t('general.report')" class="action pi pi-flag" @click="reportTorrent(slotProps.data.id)" />
+        <i
+          v-tooltip.top="$t('torrent.download')"
+          class="action pi pi-download"
+          @click="downloadTorrent(slotProps.data.id)"
+        />
+        <i
+          v-tooltip.top="$t('general.report')"
+          class="action pi pi-flag"
+          @click="reportTorrent(slotProps.data.id)"
+        />
         <i v-tooltip.top="$t('torrent.copy_permalink')" class="action pi pi-link" />
         <i v-tooltip.top="$t('general.edit')" class="action pi pi-pen-to-square" />
       </template>
@@ -89,7 +117,8 @@
           <AccordionHeader>Report information</AccordionHeader>
           <AccordionContent>
             <div class="report" v-for="report in slotProps.data.reports" :key="report.id">
-              <span class="bold">{{ $timeAgo(report.reported_at) }}</span>: {{ report.description }}
+              <span class="bold">{{ $timeAgo(report.reported_at) }}</span
+              >: {{ report.description }}
             </div>
           </AccordionContent>
         </AccordionPanel>
@@ -115,7 +144,10 @@
           <AccordionHeader>{{ $t('torrent.file_list') }}</AccordionHeader>
           <AccordionContent>
             <DataTable :value="slotProps.data.file_list.files" tableStyle="min-width: 50rem">
-              <Column field="name" :header="(slotProps.data.file_list.parent_folder ?? '') + '/'"></Column>
+              <Column
+                field="name"
+                :header="(slotProps.data.file_list.parent_folder ?? '') + '/'"
+              ></Column>
               <Column field="size" :header="$t('torrent.size')">
                 <template #body="slotProps">
                   {{ $bytesToReadable(slotProps.data.size) }}
@@ -127,7 +159,12 @@
       </Accordion>
     </template>
   </DataTable>
-  <Dialog closeOnEscape modal :header="$t('torrent.report_torrent')" v-model:visible="reportTorrentDialogVisible">
+  <Dialog
+    closeOnEscape
+    modal
+    :header="$t('torrent.report_torrent')"
+    v-model:visible="reportTorrentDialogVisible"
+  >
     <ReportTorrentDialog :torrentId="reportingTorrentId" @reported="torrentReported" />
   </Dialog>
 </template>
@@ -210,7 +247,7 @@ onMounted(() => {
   if (route.query.torrentId) {
     const torrent = title_group.edition_groups
       .flatMap((edition_group) => edition_group.torrents)
-      .find((torrent) => torrent.id === parseInt(route.query.torrentId?.toString() ?? ''));
+      .find((torrent) => torrent.id === parseInt(route.query.torrentId?.toString() ?? ''))
 
     if (torrent) {
       toggleRow(torrent)

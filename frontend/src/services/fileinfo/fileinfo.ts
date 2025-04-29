@@ -36,7 +36,7 @@ export const getFileInfo = (text: string) => {
       return fields
     }
     case 'bdinfo': {
-      return null;
+      return null
       //const info = new BdinfoParser().parse(text)
       //if (!info) {
       //  return
