@@ -122,7 +122,7 @@ async fn test_announce_known_torrent(pool: PgPool) {
         .expect("could not deserialize announce response");
 
     // There are no peers, so should be empty.
-    assert!(resp.peers.0.is_empty());
+    assert!(resp.peers.is_empty());
 }
 
 #[sqlx::test(fixtures(
@@ -165,9 +165,9 @@ async fn test_announce_known_torrent_with_peers(pool: PgPool) {
         .expect("could not deserialize announce response");
 
     // Fixture sets up two non-self peers.
-    assert!(resp.peers.0.len() == 2);
+    assert!(resp.peers.len() == 2);
 
-    for announce::Peer { ip, port } in &resp.peers.0 {
+    for announce::Peer { ip, port } in &resp.peers {
         assert_ne!(
             (ip, port),
             (&std::net::Ipv4Addr::new(10, 10, 4, 88), &6968),
