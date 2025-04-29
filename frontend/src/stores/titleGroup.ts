@@ -5,7 +5,7 @@ export const useTitleGroupStore = defineStore('titleGroup', {
   state: (): TitleGroupLite => {
     return {
       id: 0,
-      content_type: '',
+      content_type: 'movie',
       edition_groups: [],
       name: '',
     }
