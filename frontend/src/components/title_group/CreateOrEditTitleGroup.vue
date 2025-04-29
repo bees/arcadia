@@ -266,7 +266,7 @@ const titleGroupForm = ref<UserCreatedTitleGroup>({
   covers: [''],
   screenshots: [''],
   external_links: [''],
-  category: '',
+  content_type: 'movie',
   country_from: '',
   name_aliases: [],
   affiliated_artists: {},
@@ -277,12 +277,13 @@ const titleGroupForm = ref<UserCreatedTitleGroup>({
 })
 const tagsString = ref('')
 const selectableCountries = ['France', 'UK', 'USA', 'Scotland']
-const selectableCategories = {
+const selectableCategories: Record<ContentType, string[]> = {
   book: ['Illustrated', 'Periodical', 'Book', 'Article', 'Manual'],
   music: ['Single', 'Album', 'Ep'],
   movie: ['FeatureFilm', 'ShortFilm'],
   software: ['Program', 'Game'],
   collection: ['Other'],
+  tv_show: [],
 }
 
 const { t } = useI18n()
