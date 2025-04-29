@@ -1,51 +1,30 @@
 <template>
-  <DataTable
-    v-model:expandedRows="expandedRows"
-    :value="
-      title_group.edition_groups.flatMap(
-        (edition_group: EditionGroupHierarchyLite) => edition_group.torrents,
-      )
-    "
-    rowGroupMode="subheader"
-    :groupRowsBy="isGrouped ? 'edition_group_id' : undefined"
-    sortMode="single"
-    :sortField="sortBy == 'edition' ? '' : sortBy"
-    :sortOrder="1"
-    tableStyle="min-width: 50rem"
-    size="small"
-    :pt="{ rowGroupHeaderCell: { colspan: 8 } }"
-  >
+  <DataTable v-model:expandedRows="expandedRows" :value="title_group.edition_groups.flatMap(
+    (edition_group: EditionGroupHierarchyLite) => edition_group.torrents,
+  )
+    " rowGroupMode="subheader" :groupRowsBy="isGrouped ? 'edition_group_id' : undefined" sortMode="single"
+    :sortField="sortBy == 'edition' ? '' : sortBy" :sortOrder="1" tableStyle="min-width: 50rem" size="small"
+    :pt="{ rowGroupHeaderCell: { colspan: 8 } }">
     <Column expander style="width: 1em" v-if="!preview" />
     <Column style="width: 1em" v-else />
     <Column :header="$t('torrent.properties')" style="min-width: 300px">
       <template #body="slotProps">
-        <a
-          :href="
-            preview ? `/title-group/${title_group.id}?torrentId=${slotProps.data.id}` : undefined
-          "
-          @click="preview ? null : toggleRow(slotProps.data)"
-          class="cursor-pointer"
-        >
+        <a :href="preview ? `/title-group/${title_group.id}?torrentId=${slotProps.data.id}` : undefined
+          " @click="preview ? null : toggleRow(slotProps.data)" class="cursor-pointer">
           <span v-if="slotProps.data.container && title_group.content_type != 'music'">{{
             slotProps.data.container
-          }}</span>
+            }}</span>
           <span v-if="slotProps.data.video_codec"> / {{ slotProps.data.video_codec }}</span>
           <span v-if="slotProps.data.video_resolution">
-            / {{ slotProps.data.video_resolution }}</span
-          >
+            / {{ slotProps.data.video_resolution }}</span>
           <span v-if="slotProps.data.audio_codec">
-            <span v-if="title_group.content_type != 'music'">/ </span
-            >{{ slotProps.data.audio_codec }}</span
-          >
+            <span v-if="title_group.content_type != 'music'">/ </span>{{ slotProps.data.audio_codec }}</span>
           <span v-if="slotProps.data.audio_channels"> / {{ slotProps.data.audio_channels }}</span>
           <span v-if="slotProps.data.audio_bitrate_sampling">
-            / {{ slotProps.data.audio_bitrate_sampling }}</span
-          >
-          <span
-            v-if="
-              slotProps.data.languages.length === 1 && slotProps.data.languages[0] !== 'English'
-            "
-          >
+            / {{ slotProps.data.audio_bitrate_sampling }}</span>
+          <span v-if="
+            slotProps.data.languages.length === 1 && slotProps.data.languages[0] !== 'English'
+          ">
             / {{ slotProps.data.languages[0] }}
           </span>
           <span v-if="slotProps.data.languages.length > 1"> / Multi-Language </span>
@@ -69,16 +48,9 @@
     </Column>
     <Column header="">
       <template #body="slotProps">
-        <i
-          v-tooltip.top="$t('torrent.download')"
-          class="action pi pi-download"
-          @click="downloadTorrent(slotProps.data.id)"
-        />
-        <i
-          v-tooltip.top="$t('general.report')"
-          class="action pi pi-flag"
-          @click="reportTorrent(slotProps.data.id)"
-        />
+        <i v-tooltip.top="$t('torrent.download')" class="action pi pi-download"
+          @click="downloadTorrent(slotProps.data.id)" />
+        <i v-tooltip.top="$t('general.report')" class="action pi pi-flag" @click="reportTorrent(slotProps.data.id)" />
         <i v-tooltip.top="$t('torrent.copy_permalink')" class="action pi pi-link" />
         <i v-tooltip.top="$t('general.edit')" class="action pi pi-pen-to-square" />
       </template>
@@ -107,13 +79,7 @@
     </Column>
     <template #groupheader="slotProps" v-if="isGrouped">
       <div class="edition-group-header">
-        {{
-          getEditionGroupSlug(
-            title_group.edition_groups.find(
-              (group: EditionGroupInfoLite) => group.id === slotProps.data.edition_group_id,
-            ),
-          )
-        }}
+        {{ getEditionGroupSlugForId(slotProps.data.edition_group_id) }}
       </div>
     </template>
     <template #expansion="slotProps" v-if="!preview">
@@ -123,8 +89,7 @@
           <AccordionHeader>Report information</AccordionHeader>
           <AccordionContent>
             <div class="report" v-for="report in slotProps.data.reports" :key="report.id">
-              <span class="bold">{{ $timeAgo(report.reported_at) }}</span
-              >: {{ report.description }}
+              <span class="bold">{{ $timeAgo(report.reported_at) }}</span>: {{ report.description }}
             </div>
           </AccordionContent>
         </AccordionPanel>
@@ -150,10 +115,7 @@
           <AccordionHeader>{{ $t('torrent.file_list') }}</AccordionHeader>
           <AccordionContent>
             <DataTable :value="slotProps.data.file_list.files" tableStyle="min-width: 50rem">
-              <Column
-                field="name"
-                :header="(slotProps.data.file_list.parent_folder ?? '') + '/'"
-              ></Column>
+              <Column field="name" :header="(slotProps.data.file_list.parent_folder ?? '') + '/'"></Column>
               <Column field="size" :header="$t('torrent.size')">
                 <template #body="slotProps">
                   {{ $bytesToReadable(slotProps.data.size) }}
@@ -165,12 +127,7 @@
       </Accordion>
     </template>
   </DataTable>
-  <Dialog
-    closeOnEscape
-    modal
-    :header="$t('torrent.report_torrent')"
-    v-model:visible="reportTorrentDialogVisible"
-  >
+  <Dialog closeOnEscape modal :header="$t('torrent.report_torrent')" v-model:visible="reportTorrentDialogVisible">
     <ReportTorrentDialog :torrentId="reportingTorrentId" @reported="torrentReported" />
   </Dialog>
 </template>
@@ -207,7 +164,7 @@ interface Props {
 const { title_group, preview = false, sortBy = 'edition' } = defineProps<Props>()
 
 const reportTorrentDialogVisible = ref(false)
-const expandedRows = ref<Torrent[]>([])
+const expandedRows = ref<TorrentHierarchyLite[]>([])
 const reportingTorrentId = ref(0)
 const route = useRoute()
 
@@ -230,11 +187,20 @@ const reportTorrent = (id: number) => {
   reportingTorrentId.value = id
   reportTorrentDialogVisible.value = true
 }
-const toggleRow = (torrent: Torrent) => {
+const toggleRow = (torrent: TorrentHierarchyLite) => {
   if (!expandedRows.value.some((expandedTorrent) => expandedTorrent.id === torrent.id)) {
     expandedRows.value = [...expandedRows.value, torrent]
   } else {
     expandedRows.value = expandedRows.value.filter((t) => t.id !== torrent.id)
+  }
+}
+
+const getEditionGroupSlugForId = (edition_group_id: number) => {
+  const editionGroup = title_group.edition_groups.find(
+    (group: EditionGroupInfoLite) => group.id === edition_group_id,
+  )
+  if (editionGroup) {
+    getEditionGroupSlug(editionGroup)
   }
 }
 const purifyHtml = (html: string) => {
@@ -242,11 +208,13 @@ const purifyHtml = (html: string) => {
 }
 onMounted(() => {
   if (route.query.torrentId) {
-    toggleRow(
-      title_group.edition_groups
-        .flatMap((edition_group) => edition_group.torrents)
-        .find((torrent) => torrent.id === parseInt(route.query.torrentId.toString())),
-    )
+    const torrent = title_group.edition_groups
+      .flatMap((edition_group) => edition_group.torrents)
+      .find((torrent) => torrent.id === parseInt(route.query.torrentId?.toString() ?? ''));
+
+    if (torrent) {
+      toggleRow(torrent)
+    }
   }
 })
 const isGrouped = computed(() => sortBy === 'edition')
@@ -255,20 +223,25 @@ const isGrouped = computed(() => sortBy === 'edition')
 .feature {
   font-weight: bold;
 }
+
 .action {
   margin-right: 7px;
   cursor: pointer;
 }
+
 .mediainfo {
   border: 2px dotted black;
   padding: 5px;
 }
+
 .edition-group-header {
   color: var(--color-primary);
 }
+
 .date {
   font-weight: bold;
 }
+
 .release-name {
   margin-bottom: 10px;
   margin-left: 7px;
