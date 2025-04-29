@@ -15,9 +15,9 @@
     </FloatLabel>
     <div class="flex justify-content-center">
       <Button
-        v-if="step == 3 || action == 'select'"
+        v-if="step == 3"
         :label="$t('general.submit')"
-        @click="sendTitleGroup"
+        @click="selectTitleGroup"
         icon="pi pi-check"
         size="small"
         class="validate-button"
@@ -179,8 +179,8 @@ const action = ref('select') // create | select
 const titleGroupId = ref<number | null>(null)
 const step = ref(1)
 const manualCreation = ref(false)
-const selectableContentTypes = ['movie', 'tv_show', 'music', 'software', 'book', 'collection']
-const content_type = ref<ContentType>('')
+const selectableContentTypes: ContentType[] = ['movie', 'tv_show', 'music', 'software', 'book', 'collection']
+const content_type = ref<ContentType>(selectableContentTypes[0])
 let gettingTitleGroupInfo = false
 let sendingTitleGroup = false
 let initialTitleGroupForm: UserCreatedTitleGroup | null = null
@@ -211,10 +211,10 @@ const getExternalDBData = (item_id: string | number, database: string) => {
     gettingExternalDatabaseData = false
   })
 }
-const sendTitleGroup = async (titleGroupForm: UserCreatedTitleGroup) => {
-  if (action.value == 'select') {
+
+const selectTitleGroup = async () => {
     gettingTitleGroupInfo = true
-    if (!titleGroupStore.id) {
+    if (!titleGroupStore.id && titleGroupId.value) {
       const titleGroupLite = await getTitleGroupLite(titleGroupId.value)
       titleGroupStore.id = titleGroupLite.id
       titleGroupStore.edition_groups = titleGroupLite.edition_groups
@@ -222,6 +222,10 @@ const sendTitleGroup = async (titleGroupForm: UserCreatedTitleGroup) => {
     }
     emit('done')
     gettingTitleGroupInfo = false
+}
+const sendTitleGroup = async (titleGroupForm: UserCreatedTitleGroup) => {
+  if (action.value == 'select') {
+    await selectTitleGroup();
   } else {
     sendingTitleGroup = true
     titleGroupForm.content_type = content_type.value
