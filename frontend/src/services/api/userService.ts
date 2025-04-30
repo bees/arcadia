@@ -1,9 +1,6 @@
 import type { components } from '@/api-schema/schema'
 import api from './api.ts'
 
-export type Profile = components['schemas']['Profile']
-
-export type PublicProfile = components['schemas']['PublicProfile']
 
 export type Peer = components['schemas']['Peer']
 
@@ -20,6 +17,10 @@ type UserSettings = {
 export type User = components['schemas']['User'] & UserSettings;
 
 export type PublicUser = components['schemas']['PublicUser']
+
+export type Profile = components['schemas']['Profile'] & { user: User }
+
+export type PublicProfile = components['schemas']['PublicProfile']
 
 export const getMe = async (): Promise<Profile> => {
   try {
