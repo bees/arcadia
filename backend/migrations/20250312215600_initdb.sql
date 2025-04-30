@@ -446,6 +446,7 @@ CREATE TABLE peers (
     last_seen_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     real_uploaded BIGINT NOT NULL DEFAULT 0,
     real_downloaded BIGINT NOT NULL DEFAULT 0,
+    user_agent TEXT,
 
     PRIMARY KEY (id),
 

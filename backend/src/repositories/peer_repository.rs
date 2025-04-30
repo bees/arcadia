@@ -12,13 +12,14 @@ pub async fn get_user_peers(pool: &PgPool, user_id: i64) -> Vec<models::peer::Pe
                 SELECT
                     ip,
                     port,
+                    user_agent,
                     MIN(first_seen_at) as "first_seen_at!",
                     MAX(last_seen_at) as "last_seen_at!",
                     SUM(real_uploaded)::BIGINT as "real_uploaded!",
                     SUM(real_downloaded)::BIGINT as "real_downloaded!"
                 FROM peers
                 WHERE user_id = $1
-                GROUP BY (peer_id, ip, port)
+                GROUP BY (peer_id, ip, port, user_agent)
             "#,
         user_id
     )
@@ -56,6 +57,7 @@ pub async fn insert_or_update_peer(
     ip: &IpNetwork,
     user_id: &i64,
     ann: &Announce,
+    user_agent: Option<&str>,
 ) -> (i64, i64) {
     let existing = sqlx::query!(
         r#"
@@ -75,8 +77,8 @@ pub async fn insert_or_update_peer(
 
     sqlx::query!(
         r#"
-        INSERT INTO peers(torrent_id, peer_id, ip, port, user_id, real_uploaded, real_downloaded)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO peers(torrent_id, peer_id, ip, port, user_id, real_uploaded, real_downloaded, user_agent)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         ON CONFLICT (torrent_id, peer_id, ip, port) DO UPDATE
         SET
             last_seen_at = CURRENT_TIMESTAMP,
@@ -89,7 +91,8 @@ pub async fn insert_or_update_peer(
         ann.port as i32,
         user_id,
         ann.uploaded.unwrap_or(0) as i64,
-        ann.downloaded.unwrap_or(0) as i64
+        ann.downloaded.unwrap_or(0) as i64,
+        user_agent
     )
     .execute(pool)
     .await

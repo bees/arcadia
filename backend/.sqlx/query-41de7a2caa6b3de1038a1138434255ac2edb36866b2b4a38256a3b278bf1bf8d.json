@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO peers(torrent_id, peer_id, ip, port, user_id, real_uploaded, real_downloaded, user_agent)\n        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)\n        ON CONFLICT (torrent_id, peer_id, ip, port) DO UPDATE\n        SET\n            last_seen_at = CURRENT_TIMESTAMP,\n            real_uploaded = $6,\n            real_downloaded = $7\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Bytea",
+        "Inet",
+        "Int4",
+        "Int8",
+        "Int8",
+        "Int8",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "41de7a2caa6b3de1038a1138434255ac2edb36866b2b4a38256a3b278bf1bf8d"
+}

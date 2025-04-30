@@ -14,4 +14,5 @@ pub struct Peer {
     pub last_seen_at: NaiveDateTime,
     pub real_uploaded: i64,
     pub real_downloaded: i64,
+    pub user_agent: Option<String>,
 }
