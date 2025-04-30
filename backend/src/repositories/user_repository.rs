@@ -39,7 +39,7 @@ pub async fn find_user_by_id(pool: &PgPool, id: &i64) -> Result<PublicUser> {
             FROM users
             WHERE id = $1
         "#,
-        *id as i64
+        *id
     )
     .fetch_one(pool)
     .await

@@ -149,7 +149,7 @@ async fn handle_announce(
     }
 
     let resp = announce::AnnounceResponse {
-        peers: peers.into(),
+        peers,
         ..Default::default()
     };
 

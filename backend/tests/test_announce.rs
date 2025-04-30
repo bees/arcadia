@@ -122,7 +122,7 @@ async fn test_announce_known_torrent(pool: PgPool) {
         .expect("could not deserialize announce response");
 
     // There are no peers, so should be empty.
-    assert!(resp.peers.0.is_empty());
+    assert!(resp.peers.is_empty());
 }
 
 #[sqlx::test(fixtures(
@@ -165,9 +165,9 @@ async fn test_announce_known_torrent_with_peers(pool: PgPool) {
         .expect("could not deserialize announce response");
 
     // Fixture sets up two non-self peers.
-    assert!(resp.peers.0.len() == 2);
+    assert!(resp.peers.len() == 2);
 
-    for announce::Peer { ip, port } in &resp.peers.0 {
+    for announce::Peer { ip, port } in &resp.peers {
         assert_ne!(
             (ip, port),
             (&std::net::Ipv4Addr::new(10, 10, 4, 88), &6968),
@@ -274,4 +274,69 @@ async fn test_announce_torrent_specific_factor_manipulation(pool: PgPool) {
     assert_eq!(body["user"]["uploaded"].as_u64().unwrap(), 20);
     // should be 6 because users start with 1 byte downloaded at account creation
     assert_eq!(body["user"]["downloaded"].as_u64().unwrap(), 6);
+}
+
+#[sqlx::test(fixtures(
+    "with_test_user",
+    "with_test_title_group",
+    "with_test_edition_group",
+    "with_test_torrent"
+))]
+async fn test_peers_after_announce(pool: PgPool) {
+    let (service, token) = common::create_test_app_and_login(pool, 1.0, 1.0).await;
+
+    let req = test::TestRequest::get()
+        .uri(concat!(
+            "/announce/d2037c66dd3e13044e0d2f9b891c3837?",
+            "info_hash=%11%223DUfw%88%99%AA%BB%CC%DD%EE%FF%00%11%223D&",
+            "peer_id=-lt0F01-%3D%91%BB%AC%5C%C69%C0%EDmux&",
+            "key=1ab4e687&",
+            "compact=1&",
+            "port=6968&",
+            "uploaded=100&",
+            "downloaded=100&",
+            "left=14&",
+            "event=started"
+        ))
+        .insert_header(("X-Forwarded-For", "10.10.4.88"))
+        .to_request();
+
+    let resp = test::call_service(&service, req).await;
+
+    // Should succeed because there is both a matching user and info hash.
+    assert!(
+        resp.status().is_success(),
+        "status {} is not success",
+        resp.status()
+    );
+
+    let _ = common::read_body_bencode::<announce::AnnounceResponse, _>(resp)
+        .await
+        .expect("could not deserialize announce response");
+
+    let req = test::TestRequest::get()
+        .uri("/api/me/peers")
+        .insert_header(("X-Forwarded-For", "10.10.4.88"))
+        .insert_header(token)
+        .to_request();
+
+    #[derive(Debug, PartialEq, Deserialize)]
+    struct Peer {
+        pub ip: String,
+        pub port: i16,
+        pub real_uploaded: i64,
+        pub real_downloaded: i64,
+    }
+
+    let resp = common::call_and_read_body_json::<Vec<Peer>, _>(&service, req).await;
+
+    assert_eq!(
+        resp,
+        vec![Peer {
+            ip: String::from("10.10.4.88/32"),
+            port: 6968,
+            real_uploaded: 100,
+            real_downloaded: 100,
+        }]
+    );
 }

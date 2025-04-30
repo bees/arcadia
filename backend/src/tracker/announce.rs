@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 use std::str::FromStr;
 
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq)]
 pub enum TorrentEvent {
@@ -217,65 +217,58 @@ pub struct Peer {
     pub port: u16,
 }
 
-#[derive(Debug, PartialEq, Default)]
-pub struct CompactPeerList(pub Vec<Peer>);
+pub mod peer_list {
+    use super::*;
+    use serde::{Deserializer, Serializer};
 
-impl From<Vec<Peer>> for CompactPeerList {
-    fn from(vec: Vec<Peer>) -> Self {
-        CompactPeerList(vec)
-    }
-}
-
-impl Serialize for CompactPeerList {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    pub fn serialize<S>(peers: &Vec<Peer>, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        let mut vec = Vec::with_capacity(self.0.len() * 6);
-        for peer in &self.0 {
+        let mut vec = Vec::with_capacity(peers.len() * 6);
+        for peer in peers {
             vec.extend_from_slice(&peer.ip.octets());
             vec.extend_from_slice(&peer.port.to_be_bytes());
         }
         serializer.serialize_bytes(&vec)
     }
-}
 
-struct BytesVisitor;
+    struct BytesVisitor;
 
-impl serde::de::Visitor<'_> for BytesVisitor {
-    type Value = CompactPeerList;
+    impl serde::de::Visitor<'_> for BytesVisitor {
+        type Value = Vec<Peer>;
 
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("bytestring with multiple of 6 bytes")
-    }
-
-    fn visit_bytes<E>(self, bytes: &[u8]) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        if (bytes.len() % 6) != 0 {
-            return Err(E::invalid_length(
-                bytes.len(),
-                &"bytestring with multiple of 6 bytes",
-            ));
+        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+            formatter.write_str("bytestring with multiple of 6 bytes")
         }
 
-        let num_peers = bytes.len() / 6;
+        fn visit_bytes<E>(self, bytes: &[u8]) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error,
+        {
+            if (bytes.len() % 6) != 0 {
+                return Err(E::invalid_length(
+                    bytes.len(),
+                    &"bytestring with multiple of 6 bytes",
+                ));
+            }
 
-        let mut vec = Vec::with_capacity(num_peers);
+            let num_peers = bytes.len() / 6;
 
-        for i in 0..num_peers {
-            let ip = std::net::Ipv4Addr::new(bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]);
-            let port = u16::from_be_bytes([bytes[i + 4], bytes[i + 5]]);
-            vec.push(Peer { ip, port })
+            let mut vec = Vec::with_capacity(num_peers);
+
+            for i in 0..num_peers {
+                let ip =
+                    std::net::Ipv4Addr::new(bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]);
+                let port = u16::from_be_bytes([bytes[i + 4], bytes[i + 5]]);
+                vec.push(Peer { ip, port })
+            }
+
+            Ok(vec)
         }
-
-        Ok(vec.into())
     }
-}
 
-impl<'de> Deserialize<'de> for CompactPeerList {
-    fn deserialize<D>(deser: D) -> Result<Self, D::Error>
+    pub fn deserialize<'de, D>(deser: D) -> Result<Vec<Peer>, D::Error>
     where
         D: Deserializer<'de>,
     {
@@ -290,7 +283,8 @@ pub struct AnnounceResponse {
     #[serde(rename = "min interval")]
     pub min_interval: u32,
 
-    pub peers: CompactPeerList,
+    #[serde(with = "peer_list")]
+    pub peers: Vec<Peer>,
 }
 
 impl Default for AnnounceResponse {
@@ -299,7 +293,7 @@ impl Default for AnnounceResponse {
         AnnounceResponse {
             interval: 1800,
             min_interval: 30,
-            peers: vec![].into(),
+            peers: vec![],
         }
     }
 }
@@ -309,33 +303,44 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_serialize_peer() {
-        let peer = CompactPeerList(vec![Peer {
-            ip: std::net::Ipv4Addr::new(10, 10, 10, 5),
-            port: 128,
-        }]);
+    fn test_serialize_announce_response() {
+        let resp = AnnounceResponse {
+            interval: 1800,
+            min_interval: 30,
+            peers: vec![Peer {
+                ip: std::net::Ipv4Addr::new(10, 10, 10, 5),
+                port: 128,
+            }],
+        };
 
-        let enc = serde_bencode::to_bytes(&peer);
+        let enc = serde_bencode::to_bytes(&resp);
 
         assert!(enc.is_ok());
 
         let enc = enc.unwrap();
-        assert_eq!(&enc, &b"6:\x0A\x0A\x0A\x05\x00\x80");
+        assert_eq!(
+            &enc,
+            &b"d8:intervali1800e12:min intervali30e5:peers6:\x0A\x0A\x0A\x05\x00\x80e"
+        );
     }
 
     #[test]
-    fn test_deserialize_peer() {
-        let data = b"6:\x0A\x0A\x0A\x05\x00\x80";
+    fn test_deserialize_announce_response() {
+        let data = b"d8:intervali1800e12:min intervali30e5:peers6:\x0A\x0A\x0A\x05\x00\x80e";
 
-        let peer = serde_bencode::de::from_bytes::<CompactPeerList>(data)
+        let peer = serde_bencode::de::from_bytes::<AnnounceResponse>(data)
             .expect("valid data should be deserializable");
 
         assert_eq!(
             peer,
-            CompactPeerList(vec![Peer {
-                ip: std::net::Ipv4Addr::new(10, 10, 10, 5),
-                port: 128,
-            }])
+            AnnounceResponse {
+                interval: 1800,
+                min_interval: 30,
+                peers: vec![Peer {
+                    ip: std::net::Ipv4Addr::new(10, 10, 10, 5),
+                    port: 128,
+                }],
+            }
         );
     }
 
@@ -344,10 +349,10 @@ mod tests {
         let resp = AnnounceResponse {
             interval: 1800,
             min_interval: 30,
-            peers: CompactPeerList(vec![Peer {
+            peers: vec![Peer {
                 ip: std::net::Ipv4Addr::new(10, 10, 10, 5),
                 port: 128,
-            }]),
+            }],
         };
 
         let enc = serde_bencode::to_bytes(&resp);
