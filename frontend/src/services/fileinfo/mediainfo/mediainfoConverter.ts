@@ -27,7 +27,7 @@ export default class MediainfoConverter {
   }
 
   extractVideoOption(info: ParseResult) {
-    let options = new Set()
+    const options = new Set()
     for (const v of info['video']) {
       const hdrFormat = v['hdr format']
       const bitDepth = v['bit depth']
@@ -48,7 +48,7 @@ export default class MediainfoConverter {
   }
 
   extractAudioOption(info: ParseResult) {
-    let options = new Set()
+    const options = new Set()
     for (const a of info['audio']) {
       const channels = a['channel(s)']
       const commercialName = a['commercial name']

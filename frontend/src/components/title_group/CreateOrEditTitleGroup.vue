@@ -151,7 +151,7 @@
     </div>
     <div class="covers input-list">
       <label>{{ $t('general.cover', 2) }}</label>
-      <div v-for="(link, index) in titleGroupForm.covers" :key="index">
+      <div v-for="(_link, index) in titleGroupForm.covers" :key="index">
         <InputText size="small" v-model="titleGroupForm.covers[index]" :name="`covers[${index}]`" />
         <Button v-if="index == 0" @click="addCover" icon="pi pi-plus" size="small" />
         <Button
@@ -172,7 +172,7 @@
     </div>
     <div class="screenshots input-list" v-if="content_type == 'software'">
       <label>{{ $t('general.screenshots') }}</label>
-      <div v-for="(link, index) in titleGroupForm.screenshots" :key="index">
+      <div v-for="(_link, index) in titleGroupForm.screenshots" :key="index">
         <InputText
           size="small"
           v-model="titleGroupForm.screenshots[index]"
@@ -197,7 +197,7 @@
     </div>
     <div class="external-links input-list">
       <label>{{ $t('general.external_link', 2) }}</label>
-      <div v-for="(link, index) in titleGroupForm.external_links" :key="index">
+      <div v-for="(_link, index) in titleGroupForm.external_links" :key="index">
         <InputText
           size="small"
           v-model="titleGroupForm.external_links[index]"
@@ -250,7 +250,6 @@ import Message from 'primevue/message'
 import { InputNumber } from 'primevue'
 import type {
   ContentType,
-  TitleGroup,
   TitleGroupCategory,
   UserCreatedTitleGroup,
 } from '@/services/api/torrentService'
@@ -302,11 +301,6 @@ const emit = defineEmits<{
   validated: [titleGroup: UserCreatedTitleGroup]
 }>()
 
-type FormErrors = {
-  [key in keyof UserCreatedTitleGroup]: UserCreatedTitleGroup[key] extends Array<unknown>
-    ? { message: string }[][]
-    : { message: string }[]
-}
 const resolver = ({ values }: FormResolverOptions) => {
   const errors: Partial<Record<keyof UserCreatedTitleGroup, { message: string }[]>> = {}
 
