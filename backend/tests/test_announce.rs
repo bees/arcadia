@@ -315,7 +315,7 @@ async fn test_peers_after_announce(pool: PgPool) {
         .expect("could not deserialize announce response");
 
     let req = test::TestRequest::get()
-        .uri("/api/me/peers")
+        .uri("/api/me")
         .insert_header(("X-Forwarded-For", "10.10.4.88"))
         .insert_header(token)
         .to_request();
@@ -328,10 +328,15 @@ async fn test_peers_after_announce(pool: PgPool) {
         pub real_downloaded: i64,
     }
 
-    let resp = common::call_and_read_body_json::<Vec<Peer>, _>(&service, req).await;
+    #[derive(Debug, PartialEq, Deserialize)]
+    struct Profile {
+        pub peers: Vec<Peer>,
+    }
+
+    let resp = common::call_and_read_body_json::<Profile, _>(&service, req).await;
 
     assert_eq!(
-        resp,
+        resp.peers,
         vec![Peer {
             ip: String::from("10.10.4.88/32"),
             port: 6968,
