@@ -141,7 +141,7 @@ import Button from 'primevue/button'
 import DatePicker from 'primevue/datepicker'
 import Message from 'primevue/message'
 import { InputNumber } from 'primevue'
-import type { ContentType, UserCreatedTitleGroup } from '@/services/api/torrentService'
+import type { ContentType, TitleGroup, TitleGroupCategory, UserCreatedTitleGroup } from '@/services/api/torrentService'
 import { useI18n } from 'vue-i18n'
 import { isValidUrl } from '@/services/helpers'
 
@@ -175,7 +175,7 @@ const titleGroupForm = ref<UserCreatedTitleGroup>({
 })
 const tagsString = ref('')
 const selectableCountries = ['France', 'UK', 'USA', 'Scotland']
-const selectableCategories: Record<ContentType, string[]> = {
+const selectableCategories: Record<ContentType, TitleGroupCategory[]> = {
   book: ['Illustrated', 'Periodical', 'Book', 'Article', 'Manual'],
   music: ['Single', 'Album', 'Ep'],
   movie: ['FeatureFilm', 'ShortFilm'],
