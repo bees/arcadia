@@ -20,7 +20,7 @@ export const bytesToReadable = (bytes: number): string => {
     unitIndex++
   }
 
-  return `${size.toFixed(2)} ${units[unitIndex]}`
+  return `${size.toFixed(unitIndex === 0 ? 0 : 2)} ${units[unitIndex]}`
 }
 export const getEditionGroupSlug = (editionGroup: EditionGroupInfoLite): string => {
   let slug = ''
