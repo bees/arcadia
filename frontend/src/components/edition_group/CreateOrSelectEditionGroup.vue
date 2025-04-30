@@ -9,8 +9,13 @@
   </div>
   <div id="select-edition-group" v-if="action == 'select'">
     <FloatLabel>
-      <Select v-model="selected_edition_group" inputId="edition_group" :options="titleGroup.edition_groups" size="small"
-        class="select-existing-edition">
+      <Select
+        v-model="selected_edition_group"
+        inputId="edition_group"
+        :options="titleGroup.edition_groups"
+        size="small"
+        class="select-existing-edition"
+      >
         <template #option="slotProps">
           <div>
             {{ getEditionGroupSlug(slotProps.option) }}
@@ -25,8 +30,14 @@
       <label for="edition_group">{{ $t('torrent.edition') }}</label>
     </FloatLabel>
     <div class="flex justify-content-center">
-      <Button label="Validate edition" @click="() => sendEditionGroup()" icon="pi pi-check" size="small" class="validate-button"
-        :loading="creatingEditionGroup" />
+      <Button
+        label="Validate edition"
+        @click="() => sendEditionGroup()"
+        icon="pi pi-check"
+        size="small"
+        class="validate-button"
+        :loading="creatingEditionGroup"
+      />
     </div>
   </div>
   <div v-if="action === 'create'">
@@ -80,7 +91,6 @@ const sendEditionGroup = (editionGroupForm?: UserCreatedEditionGroup) => {
     })
   }
 }
-
 </script>
 <style scoped>
 .title {

@@ -1,5 +1,5 @@
 import { expect, test, describe } from 'vitest'
-import MediainfoParser from '../mediainfoParser';
+import MediainfoParser from '../mediainfoParser'
 
 const movMediaInfo = `
 General

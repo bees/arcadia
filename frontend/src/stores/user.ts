@@ -37,8 +37,8 @@ export const useUserStore = defineStore('user', {
     seeding_size: 0,
     settings: {
       site_appearance: {
-        item_detail_layout: 'header'
-      }
+        item_detail_layout: 'header',
+      },
     },
     snatched: 0,
     torrent_comments: 0,

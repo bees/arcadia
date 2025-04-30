@@ -1,7 +1,6 @@
 import type { components } from '@/api-schema/schema'
 import api from './api.ts'
 
-
 export type Peer = components['schemas']['Peer']
 
 // TODO: update when we can deserialize the settings field to a rust struct and get the type for
@@ -10,11 +9,11 @@ export type Peer = components['schemas']['Peer']
 type UserSettings = {
   settings: {
     site_appearance: {
-      item_detail_layout: 'header' | 'sidebar_right' | 'sidebar_left';
+      item_detail_layout: 'header' | 'sidebar_right' | 'sidebar_left'
     }
   }
 }
-export type User = components['schemas']['User'] & UserSettings;
+export type User = components['schemas']['User'] & UserSettings
 
 export type PublicUser = components['schemas']['PublicUser']
 
