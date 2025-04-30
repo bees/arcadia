@@ -202,7 +202,6 @@ import {
   type EditionGroupHierarchyLite,
   type EditionGroupInfoLite,
   type TitleGroupAndAssociatedData,
-  type Torrent,
   type TorrentHierarchyLite,
   type TorrentReport,
 } from '@/services/api/torrentService'
