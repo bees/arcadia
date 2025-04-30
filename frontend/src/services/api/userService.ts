@@ -7,7 +7,17 @@ export type PublicProfile = components['schemas']['PublicProfile']
 
 export type Peer = components['schemas']['Peer']
 
-export type User = components['schemas']['User']
+// TODO: update when we can deserialize the settings field to a rust struct and get the type for
+// this field generated automatically
+// https://github.com/launchbadge/sqlx/issues/3153#issuecomment-2798756953
+type UserSettings = {
+  settings: {
+    site_appearance: {
+      item_detail_layout: 'header' | 'sidebar_right' | 'sidebar_left';
+    }
+  }
+}
+export type User = components['schemas']['User'] & UserSettings;
 
 export type PublicUser = components['schemas']['PublicUser']
 
