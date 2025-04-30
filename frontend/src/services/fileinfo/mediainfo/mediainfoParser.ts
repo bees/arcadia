@@ -36,7 +36,7 @@ export default class MediainfoParser {
       if (Array.isArray(result[sectionName])) {
         result[sectionName].push(fields)
       } else {
-        // @ts-ignore TODO: type isn't narrowing - why?
+        // @ts-expect-error TODO: type isn't narrowing - why?
         result[sectionName] = fields
       }
     }
