@@ -178,8 +178,8 @@ import type { TitleGroupLite, UserCreatedEditionGroup } from '@/services/api/tor
 
 interface Props {
   titleGroup: TitleGroupLite
-  sendingEditionGroup: boolean
-  initialEditionGroupForm: UserCreatedEditionGroup | null
+  sendingEditionGroup?: boolean
+  initialEditionGroupForm?: UserCreatedEditionGroup | null
 }
 const {
   titleGroup,
