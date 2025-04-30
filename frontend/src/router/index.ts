@@ -57,9 +57,9 @@ const router = createRouter({
       component: () => import('../views/UploadTorrentView.vue'),
     },
     {
-      path: '/peers',
-      name: 'MyPeers',
-      component: () => import('../views/MyPeers.vue'),
+      path: '/user/:id',
+      name: 'User',
+      component: () => import('../views/UserView.vue'),
     },
   ],
 })

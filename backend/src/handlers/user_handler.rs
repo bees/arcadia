@@ -1,7 +1,7 @@
 use crate::{
     Arcadia, Result,
-    models::user::{PublicUser, User},
-    repositories::user_repository::find_user_by_id,
+    models::user::{Profile, PublicProfile, User},
+    repositories::{peer_repository, user_repository::find_user_by_id},
 };
 use actix_web::{HttpResponse, web};
 use serde::Deserialize;
@@ -18,7 +18,7 @@ pub struct GetUserQuery {
     path = "/api/user",
     params(GetUserQuery),
     responses(
-        (status = 200, description = "Successfully got the user", body=PublicUser),
+        (status = 200, description = "Successfully got the user's profile", body=PublicProfile),
     )
 )]
 pub async fn get_user(
@@ -27,17 +27,18 @@ pub async fn get_user(
 ) -> Result<HttpResponse> {
     let user = find_user_by_id(&arc.pool, &query.id).await?;
 
-    Ok(HttpResponse::Created().json(user))
+    Ok(HttpResponse::Created().json(json!({"user":user})))
 }
 
 #[utoipa::path(
     get,
     path = "/api/me",
     responses(
-        (status = 200, description = "Successfully got the user", body=User),
+        (status = 200, description = "Successfully got the user's profile", body=Profile),
     )
 )]
-pub async fn get_me(mut current_user: User) -> HttpResponse {
+pub async fn get_me(mut current_user: User, arc: web::Data<Arcadia>) -> HttpResponse {
     current_user.password_hash = String::from("");
-    HttpResponse::Ok().json(json!({"user": current_user}))
+    let peers = peer_repository::get_user_peers(&arc.pool, current_user.id).await;
+    HttpResponse::Ok().json(json!({"user": current_user, "peers":peers}))
 }

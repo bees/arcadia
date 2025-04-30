@@ -10,7 +10,6 @@ use crate::handlers::{
     edition_group_handler::add_edition_group,
     invitation_handler::send_invitation,
     master_group_handler::add_master_group,
-    peers_handler::get_user_peers,
     scrapers::{
         open_library::get_open_library_data,
         tmdb::{get_tmdb_movie_data, get_tmdb_tv_data},
@@ -34,7 +33,6 @@ pub fn init(cfg: &mut web::ServiceConfig) {
             .route("/login", web::post().to(login))
             .route("/user", web::get().to(get_user))
             .route("/me", web::get().to(get_me))
-            .route("/me/peers", web::get().to(get_user_peers))
             .route("/invitation", web::post().to(send_invitation))
             .route("/master-group", web::post().to(add_master_group))
             .route("/title-group", web::post().to(add_title_group))

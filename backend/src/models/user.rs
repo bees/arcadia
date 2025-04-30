@@ -4,6 +4,8 @@ use sqlx::prelude::FromRow;
 use sqlx::types::ipnetwork::IpNetwork;
 use utoipa::ToSchema;
 
+use super::peer::Peer;
+
 // TODO: deserialize the settings field to a rust struct, currently doesn't seem possible
 // https://github.com/launchbadge/sqlx/issues/3153#issuecomment-2798756953
 // #[derive(Serialize, Deserialize, Debug, sqlx::Type)]
@@ -69,6 +71,7 @@ pub struct User {
     pub invited: i64,
     pub invitations: i16,
     pub bonus_points: i64,
+    pub freeleech_tokens: i32,
     pub settings: serde_json::Value,
     pub passkey_upper: i64,
     pub passkey_lower: i64,
@@ -142,4 +145,15 @@ pub struct UserLiteAvatar {
     pub id: i64,
     pub username: String,
     pub avatar: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct Profile {
+    pub user: User,
+    pub peers: Vec<Peer>,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct PublicProfile {
+    pub user: PublicUser,
 }

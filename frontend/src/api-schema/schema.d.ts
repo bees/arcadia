@@ -116,22 +116,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/peers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["get_user_peers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/register": {
         parameters: {
             query?: never;
@@ -547,6 +531,13 @@ export interface components {
         };
         /** @enum {string} */
         Platform: "Windows" | "Linux" | "MacOS" | "Xbox";
+        Profile: {
+            peers: components["schemas"]["Peer"][];
+            user: components["schemas"]["User"];
+        };
+        PublicProfile: {
+            user: components["schemas"]["PublicUser"];
+        };
         PublicUser: {
             /** Format: int64 */
             artist_comments: number;
@@ -1042,6 +1033,8 @@ export interface components {
             /** Format: int32 */
             forum_threads: number;
             /** Format: int32 */
+            freeleech_tokens: number;
+            /** Format: int32 */
             group_comments: number;
             /** Format: int64 */
             id: number;
@@ -1388,33 +1381,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successfully got the user */
+            /** @description Successfully got the user's profile */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"];
-                };
-            };
-        };
-    };
-    get_user_peers: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successfully retrieved peer list */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Peer"][];
+                    "application/json": components["schemas"]["Profile"];
                 };
             };
         };
@@ -1796,13 +1769,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successfully got the user */
+            /** @description Successfully got the user's profile */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PublicUser"];
+                    "application/json": components["schemas"]["PublicProfile"];
                 };
             };
         };

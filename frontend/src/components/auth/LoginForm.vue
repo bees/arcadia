@@ -40,6 +40,7 @@ import Checkbox from 'primevue/checkbox'
 import { login } from '@/services/api/authService'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
+import { getMe } from '@/services/api/userService'
 
 const form = {
   username: '',
@@ -50,11 +51,12 @@ const form = {
 const router = useRouter()
 const userStore = useUserStore()
 
-const handleLogin = () => {
-  login(form).then((data) => {
+const handleLogin = async () => {
+  login(form).then(async (data) => {
     localStorage.setItem('token', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    userStore.setUser(data.user)
+    const profile = await getMe()
+    localStorage.setItem('user', JSON.stringify(profile.user))
+    userStore.setUser(profile.user)
     router.push('/')
   })
 }

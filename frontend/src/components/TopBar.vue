@@ -25,6 +25,9 @@
           <Button icon="pi pi-upload" severity="secondary" size="small" />
         </RouterLink>
         <Button icon="pi pi-moon" @click="toggleDarkMode()" severity="secondary" size="small" />
+        <RouterLink :to="`/user/${user.id}`">
+          <Button icon="pi pi-user" severity="secondary" size="small" />
+        </RouterLink>
       </div>
     </div>
   </div>

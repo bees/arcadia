@@ -20,18 +20,25 @@ import MenuBar from './components/MenuBar.vue'
 import TopBar from './components/TopBar.vue'
 import SearchBars from './components/SearchBars.vue'
 import { useUserStore } from './stores/user'
+import { getMe } from './services/api/userService'
+import { onBeforeMount } from 'vue'
 
 // enable dark mode by default
 document.documentElement.classList.add('dark-theme')
 
-const user = localStorage.getItem('user')
-if (user) {
-  const userStore = useUserStore()
-  userStore.setUser(JSON.parse(user))
-} else {
-  const router = useRouter()
-  router.push('/login')
-}
+onBeforeMount(async () => {
+  const user = localStorage.getItem('user')
+  if (user) {
+    // refresh user on page reload
+    const profile = await getMe()
+    localStorage.setItem('user', JSON.stringify(profile.user))
+    const userStore = useUserStore()
+    userStore.setUser(profile.user)
+  } else {
+    const router = useRouter()
+    router.push('/login')
+  }
+})
 </script>
 
 <style>
