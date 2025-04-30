@@ -305,23 +305,4 @@ const isGrouped = computed(() => sortBy === 'edition')
   height: auto;
   border-radius: 4px;
 }
-
-.report {
-  margin-bottom: 15px;
-  border-left: 3px solid var(--color-primary);
-  padding-left: 10px;
-}
-
-.report-header {
-  margin-bottom: 5px;
-}
-
-.report-time {
-  font-weight: bold;
-  color: var(--color-primary);
-}
-
-.report-content {
-  margin-left: 5px;
-}
 </style>
