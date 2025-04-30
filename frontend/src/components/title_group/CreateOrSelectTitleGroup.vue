@@ -15,7 +15,6 @@
     </FloatLabel>
     <div class="flex justify-content-center">
       <Button
-        v-if="step == 3"
         :label="$t('general.submit')"
         @click="selectTitleGroup"
         icon="pi pi-check"
