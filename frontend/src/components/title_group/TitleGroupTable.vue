@@ -107,11 +107,7 @@
     </Column>
     <template #groupheader="slotProps" v-if="isGrouped">
       <div class="edition-group-header">
-<<<<<<< HEAD
-        {{ getEditionGroupSlugForId(slotProps.data.edition_group_id) }}
-=======
         {{ getEditionGroupSlugById(slotProps.data.edition_group_id) }}
->>>>>>> origin/main
       </div>
     </template>
     <template #expansion="slotProps" v-if="!preview">
