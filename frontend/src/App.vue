@@ -1,5 +1,5 @@
 <template>
-  <div id="app-container">
+  <div id="app-container" v-if="isAppReady">
     <div
       class="navbars-container"
       v-if="['/login', '/register'].indexOf($router.currentRoute.value.path) < 0"
@@ -20,18 +20,28 @@ import MenuBar from './components/MenuBar.vue'
 import TopBar from './components/TopBar.vue'
 import SearchBars from './components/SearchBars.vue'
 import { useUserStore } from './stores/user'
+import { getMe } from './services/api/userService'
+import { onBeforeMount, ref } from 'vue'
 
 // enable dark mode by default
 document.documentElement.classList.add('dark-theme')
 
-const user = localStorage.getItem('user')
-if (user) {
-  const userStore = useUserStore()
-  userStore.setUser(JSON.parse(user))
-} else {
-  const router = useRouter()
-  router.push('/login')
-}
+const isAppReady = ref(false)
+
+onBeforeMount(async () => {
+  const user = localStorage.getItem('user')
+  if (user) {
+    // refresh user on page reload
+    const profile = await getMe()
+    localStorage.setItem('user', JSON.stringify(profile.user))
+    const userStore = useUserStore()
+    userStore.setUser(profile.user)
+  } else {
+    const router = useRouter()
+    router.push('/login')
+  }
+  isAppReady.value = true
+})
 </script>
 
 <style>

@@ -17,7 +17,7 @@ use crate::{
         torrent_report::{TorrentReport, UserCreatedTorrentReport},
         torrent_request::{TorrentRequest, UserCreatedTorrentRequest},
         torrent_request_vote::{TorrentRequestVote, UserCreatedTorrentRequestVote},
-        user::{Login, PublicUser, Register, User},
+        user::{Login, Profile, PublicProfile, PublicUser, Register, User},
     },
 };
 
@@ -84,7 +84,9 @@ use crate::{
         TorrentSearchResults,
         TitleGroupAndAssociatedData,
         UploadedTorrent,
-        Torrent
+        Torrent,
+        Profile,
+        PublicProfile
     ),)
 )]
 pub struct ApiDoc;

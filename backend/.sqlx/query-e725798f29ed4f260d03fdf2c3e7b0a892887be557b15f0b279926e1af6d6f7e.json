@@ -170,16 +170,21 @@
       },
       {
         "ordinal": 33,
+        "name": "freeleech_tokens",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 34,
         "name": "settings",
         "type_info": "Jsonb"
       },
       {
-        "ordinal": 34,
+        "ordinal": 35,
         "name": "passkey_upper",
         "type_info": "Int8"
       },
       {
-        "ordinal": 35,
+        "ordinal": 36,
         "name": "passkey_lower",
         "type_info": "Int8"
       }
@@ -193,6 +198,7 @@
       false,
       false,
       true,
+      false,
       false,
       false,
       false,

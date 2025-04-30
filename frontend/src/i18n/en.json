@@ -121,7 +121,8 @@
     "audio_channels": "Audio channels",
     "features": "Features",
     "torrent_file": "Torrent file",
-    "upload_as_anonymous": "Upload as anonymous"
+    "upload_as_anonymous": "Upload as anonymous",
+    "clients_and_ips": "Clients and IP-Addresses"
   },
   "error": {
     "write_more_than_x_chars": "Write more than {0} characters",

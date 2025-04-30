@@ -515,8 +515,30 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        Peer: {
+            /** Format: date-time */
+            first_seen_at: string;
+            /** Format: 0.0.0.0 */
+            ip: string;
+            /** Format: date-time */
+            last_seen_at: string;
+            /** Format: int32 */
+            port: number;
+            /** Format: int64 */
+            real_downloaded: number;
+            /** Format: int64 */
+            real_uploaded: number;
+            user_agent?: string | null;
+        };
         /** @enum {string} */
         Platform: "Windows" | "Linux" | "MacOS" | "Xbox";
+        Profile: {
+            peers: components["schemas"]["Peer"][];
+            user: components["schemas"]["User"];
+        };
+        PublicProfile: {
+            user: components["schemas"]["PublicUser"];
+        };
         PublicUser: {
             /** Format: int64 */
             artist_comments: number;
@@ -1012,6 +1034,8 @@ export interface components {
             /** Format: int32 */
             forum_threads: number;
             /** Format: int32 */
+            freeleech_tokens: number;
+            /** Format: int32 */
             group_comments: number;
             /** Format: int64 */
             id: number;
@@ -1358,13 +1382,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successfully got the user */
+            /** @description Successfully got the user's profile */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"];
+                    "application/json": components["schemas"]["Profile"];
                 };
             };
         };
@@ -1746,13 +1770,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successfully got the user */
+            /** @description Successfully got the user's profile */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PublicUser"];
+                    "application/json": components["schemas"]["PublicProfile"];
                 };
             };
         };

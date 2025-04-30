@@ -7,15 +7,17 @@
           :src="comment.created_by.avatar ?? '/default_user_avatar.svg'"
           :alt="comment.created_by.username + '\'s avatar'"
         />
-        <span class="username">
-          {{ comment.created_by.username }}
-        </span>
+        <RouterLink :to="`/user/${comment.created_by.id}`">
+          <span class="username">
+            {{ comment.created_by.username }}
+          </span>
+        </RouterLink>
         <span class="time-ago">
           {{ $timeAgo(comment.created_at) }}
         </span>
       </div>
       <div class="comment-body">
-        <div>{{ comment.content }}</div>
+        <BBCodeRenderer :content="comment.content" />
       </div>
     </div>
   </ContentContainer>
@@ -23,6 +25,7 @@
 
 <script setup lang="ts">
 import ContentContainer from '@/components/ContentContainer.vue'
+import BBCodeRenderer from '@/components/BBCodeRenderer.vue'
 import type { TitleGroupCommentHierarchy } from '@/services/api/commentService'
 
 defineProps<{

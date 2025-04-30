@@ -33,6 +33,7 @@ CREATE TABLE users (
     invited BIGINT NOT NULL DEFAULT 0,
     invitations SMALLINT NOT NULL DEFAULT 0,
     bonus_points BIGINT NOT NULL DEFAULT 0,
+    freeleech_tokens INT NOT NULL DEFAULT 0,
     settings JSONB NOT NULL DEFAULT '{}',
     passkey_upper BIGINT NOT NULL,
     passkey_lower BIGINT NOT NULL,
@@ -314,7 +315,7 @@ CREATE TABLE torrents (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     created_by_id BIGINT NOT NULL,
-    info_hash BYTEA NOT NULL,
+    info_hash BYTEA NOT NULL CHECK(octet_length(info_hash) = 20),
     info_dict BYTEA NOT NULL,
     languages language_enum[] NOT NULL,
     release_name TEXT NOT NULL,
@@ -436,15 +437,16 @@ CREATE TABLE notifications (
 );
 CREATE TABLE peers (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
-    user_id BIGINT,
+    user_id BIGINT NOT NULL,
     torrent_id BIGINT NOT NULL,
-    peer_id BYTEA NOT NULL,
+    peer_id BYTEA NOT NULL CHECK(octet_length(peer_id) = 20),
     ip INET NOT NULL,
     port INTEGER NOT NULL,
     first_seen_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_seen_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     real_uploaded BIGINT NOT NULL DEFAULT 0,
     real_downloaded BIGINT NOT NULL DEFAULT 0,
+    user_agent TEXT,
 
     PRIMARY KEY (id),
 

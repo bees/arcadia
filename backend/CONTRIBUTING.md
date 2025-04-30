@@ -85,6 +85,12 @@ API calls are forwarded to `handlers`, database requests are done by `repositori
 
 A swagger for the API is available at `http://localhost:8080/swagger-ui`
 
+If you make changes to structs that are listed in the swagger, you must regenerate the typescript interfaces with this command (from the frontend directory, while the backend is running) :
+
+```
+npx openapi-typescript http://127.0.0.1:8080/swagger-json/openapi.json -o ./src/api-schema/schema.d.ts
+```
+
 ## Testing
 
 Adding additional tests to Arcadia is strongly encouraged, especially when adding new features! For unit tests, they can be added in the module being tested using standard rust idioms.
