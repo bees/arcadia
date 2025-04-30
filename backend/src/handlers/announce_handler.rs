@@ -80,10 +80,52 @@ impl actix_web::ResponseError for Error {
 
 type Result<T> = std::result::Result<T, Error>;
 
+#[derive(Debug)]
+pub struct UserAgent(pub String);
+
+impl std::ops::Deref for UserAgent {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        self.0.deref()
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum UserAgentExtractError {
+    #[error("no user agent")]
+    NoUserAgent,
+
+    #[error("not decodable as utf-8")]
+    ToStrError(#[from] actix_web::http::header::ToStrError),
+}
+
+impl ResponseError for UserAgentExtractError {
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::BadRequest().body(format!("{}", self))
+    }
+}
+
+impl FromRequest for UserAgent {
+    type Error = UserAgentExtractError;
+    type Future = Ready<std::result::Result<Self, Self::Error>>;
+
+    fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+        let user_agent = req
+            .headers()
+            .get("User-Agent")
+            .ok_or(UserAgentExtractError::NoUserAgent)
+            .and_then(|s| Ok(UserAgent(String::from(s.to_str()?))));
+
+        future::ready(user_agent)
+    }
+}
+
 #[get("/announce/{passkey}")]
 async fn handle_announce(
     arc: web::Data<Arcadia>,
     passkey: web::Path<String>,
+    user_agent: Option<UserAgent>,
     ann: announce::Announce,
     conn: dev::ConnectionInfo,
 ) -> Result<HttpResponse> {
@@ -111,8 +153,15 @@ async fn handle_announce(
         todo!();
     }
 
-    let (old_real_uploaded, old_real_downloaded) =
-        insert_or_update_peer(&arc.pool, &torrent.id, &ip, &current_user.id, &ann).await;
+    let (old_real_uploaded, old_real_downloaded) = insert_or_update_peer(
+        &arc.pool,
+        &torrent.id,
+        &ip,
+        &current_user.id,
+        &ann,
+        user_agent.as_deref(),
+    )
+    .await;
 
     let peers = find_torrent_peers(&arc.pool, &torrent.id, &current_user.id).await;
 

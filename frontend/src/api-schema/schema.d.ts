@@ -528,6 +528,7 @@ export interface components {
             real_downloaded: number;
             /** Format: int64 */
             real_uploaded: number;
+            user_agent?: string | null;
         };
         /** @enum {string} */
         Platform: "Windows" | "Linux" | "MacOS" | "Xbox";
