@@ -9,13 +9,8 @@
   </div>
   <div id="select-edition-group" v-if="action == 'select'">
     <FloatLabel>
-      <Select
-        v-model="selected_edition_group"
-        inputId="edition_group"
-        :options="titleGroup.edition_groups"
-        size="small"
-        class="select-existing-edition"
-      >
+      <Select v-model="selected_edition_group" inputId="edition_group" :options="titleGroup.edition_groups" size="small"
+        class="select-existing-edition">
         <template #option="slotProps">
           <div>
             {{ getEditionGroupSlug(slotProps.option) }}
@@ -30,14 +25,8 @@
       <label for="edition_group">{{ $t('torrent.edition') }}</label>
     </FloatLabel>
     <div class="flex justify-content-center">
-      <Button
-        label="Validate edition"
-        @click="sendEditionGroup"
-        icon="pi pi-check"
-        size="small"
-        class="validate-button"
-        :loading="creatingEditionGroup"
-      />
+      <Button label="Validate edition" @click="sendEditionGroup" icon="pi pi-check" size="small" class="validate-button"
+        :loading="creatingEditionGroup" />
     </div>
   </div>
   <div v-if="action === 'create'">
@@ -65,17 +54,20 @@ import { getEditionGroupSlug } from '@/services/helpers'
 // eslint-disable-next-line prefer-const
 let action = ref('select') // create | select
 const step = 1
-const titleGroup = ref({ edition_groups: [] })
 const selected_edition_group = ref<EditionGroupInfoLite | null>(null)
 let creatingEditionGroup = false
 
 const emit = defineEmits<{
   done: [editionGroup: EditionGroupInfoLite]
 }>()
+const titleGroup = useTitleGroupStore()
 
 const sendEditionGroup = (editionGroupForm: UserCreatedEditionGroup) => {
   if (action.value == 'select') {
-    emit('done', selected_edition_group.value)
+    // this should be an invariant - TODO: should we emit a warning if the value is actually null?
+    if (selected_edition_group.value) {
+      emit('done', selected_edition_group.value)
+    }
   } else {
     creatingEditionGroup = true
     const formattededitionGroupForm = JSON.parse(JSON.stringify(editionGroupForm))
@@ -88,29 +80,27 @@ const sendEditionGroup = (editionGroupForm: UserCreatedEditionGroup) => {
   }
 }
 
-onMounted(() => {
-  const titleGroupStore = useTitleGroupStore()
-  if (titleGroupStore.id) {
-    titleGroup.value = titleGroupStore
-  }
-})
 </script>
 <style scoped>
 .title {
   font-weight: bold;
   font-size: 1.5em;
 }
+
 .title .alternative {
   font-size: 0.8em;
   color: var(--color-secondary);
   cursor: pointer;
 }
+
 .p-floatlabel {
   margin: 30px 0px;
 }
+
 .select-existing-edition {
   width: 500px;
 }
+
 .validate-button {
   margin-top: 20px;
 }

@@ -116,12 +116,12 @@
           size="small"
         />
         <Message
-          v-if="$form.covers?.[index]?.invalid"
+          v-if="($form.covers as unknown as FormFieldState[])?.[index]?.invalid"
           severity="error"
           size="small"
           variant="simple"
         >
-          {{ $form.covers[index].error?.message }}
+          {{ ($form.covers as unknown as FormFieldState[])[index].error?.message }}
         </Message>
       </div>
     </div>
@@ -141,12 +141,12 @@
           size="small"
         />
         <Message
-          v-if="$form.external_links?.[index]?.invalid"
+          v-if="($form.external_links as unknown as FormFieldState[])?.[index]?.invalid"
           severity="error"
           size="small"
           variant="simple"
         >
-          {{ $form.external_links[index].error?.message }}
+          {{ ($form.external_links as unknown as FormFieldState[])[index].error?.message }}
         </Message>
       </div>
     </div>
@@ -171,7 +171,7 @@ import Select from 'primevue/select'
 import Button from 'primevue/button'
 import DatePicker from 'primevue/datepicker'
 import Message from 'primevue/message'
-import { Form, type FormResolverOptions, type FormSubmitEvent } from '@primevue/forms'
+import { Form, type FormFieldState, type FormResolverOptions, type FormSubmitEvent } from '@primevue/forms'
 import { useI18n } from 'vue-i18n'
 import { isValidUrl } from '@/services/helpers'
 import type { TitleGroupLite, UserCreatedEditionGroup } from '@/services/api/torrentService'
@@ -228,7 +228,7 @@ const resolver = ({ values }: FormResolverOptions) => {
       if (!('external_links' in errors)) {
         errors.external_links = []
       }
-      errors.external_links[index] = [{ message: t('error.invalid_url') }]
+      errors.external_links![index] = { message: t('error.invalid_url') }
     }
   })
   values.covers.forEach((link: string, index: number) => {
@@ -236,7 +236,7 @@ const resolver = ({ values }: FormResolverOptions) => {
       if (!('covers' in errors)) {
         errors.covers = []
       }
-      errors.covers[index] = [{ message: t('error.invalid_url') }]
+      errors.covers![index] = { message: t('error.invalid_url') }
     }
   })
 
