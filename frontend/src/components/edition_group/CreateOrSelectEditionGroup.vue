@@ -25,7 +25,7 @@
       <label for="edition_group">{{ $t('torrent.edition') }}</label>
     </FloatLabel>
     <div class="flex justify-content-center">
-      <Button label="Validate edition" @click="sendEditionGroup" icon="pi pi-check" size="small" class="validate-button"
+      <Button label="Validate edition" @click="() => sendEditionGroup()" icon="pi pi-check" size="small" class="validate-button"
         :loading="creatingEditionGroup" />
     </div>
   </div>
@@ -54,21 +54,22 @@ import { getEditionGroupSlug } from '@/services/helpers'
 // eslint-disable-next-line prefer-const
 let action = ref('select') // create | select
 const step = 1
+
+const titleGroup = useTitleGroupStore()
 const selected_edition_group = ref<EditionGroupInfoLite | null>(null)
 let creatingEditionGroup = false
 
 const emit = defineEmits<{
   done: [editionGroup: EditionGroupInfoLite]
 }>()
-const titleGroup = useTitleGroupStore()
 
-const sendEditionGroup = (editionGroupForm: UserCreatedEditionGroup) => {
+const sendEditionGroup = (editionGroupForm?: UserCreatedEditionGroup) => {
   if (action.value == 'select') {
     // this should be an invariant - TODO: should we emit a warning if the value is actually null?
     if (selected_edition_group.value) {
       emit('done', selected_edition_group.value)
     }
-  } else {
+  } else if (editionGroupForm !== undefined) {
     creatingEditionGroup = true
     const formattededitionGroupForm = JSON.parse(JSON.stringify(editionGroupForm))
     // otherwise there is a json parse error, last char is "Z"
