@@ -7,9 +7,11 @@
           :src="comment.created_by.avatar ?? '/default_user_avatar.svg'"
           :alt="comment.created_by.username + '\'s avatar'"
         />
-        <span class="username">
-          {{ comment.created_by.username }}
-        </span>
+        <RouterLink :to="`/user/${comment.created_by.id}`">
+          <span class="username">
+            {{ comment.created_by.username }}
+          </span>
+        </RouterLink>
         <span class="time-ago">
           {{ $timeAgo(comment.created_at) }}
         </span>
