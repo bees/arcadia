@@ -58,7 +58,7 @@
           <Select
             v-model="editionGroupForm.source"
             inputId="source"
-            :options="$getSources(titleGroup.content_type)"
+            :options="$getSources(titleGroup.content_type ?? '')"
             class="select-source"
             size="small"
             name="source"
@@ -102,7 +102,7 @@
     </div>
     <div class="covers input-list">
       <label>{{ $t('general.cover', 2) }}</label>
-      <div v-for="(link, index) in editionGroupForm.covers" :key="index">
+      <div v-for="(_link, index) in editionGroupForm.covers" :key="index">
         <InputText
           size="small"
           v-model="editionGroupForm.covers[index]"
@@ -127,7 +127,7 @@
     </div>
     <div class="external-links input-list">
       <label>{{ $t('general.external_link', 2) }}</label>
-      <div v-for="(link, index) in editionGroupForm.external_links" :key="index">
+      <div v-for="(_link, index) in editionGroupForm.external_links" :key="index">
         <InputText
           size="small"
           v-model="editionGroupForm.external_links[index]"
@@ -182,7 +182,7 @@ import { isValidUrl } from '@/services/helpers'
 import type { TitleGroupLite, UserCreatedEditionGroup } from '@/services/api/torrentService'
 
 interface Props {
-  titleGroup: TitleGroupLite
+  titleGroup: Partial<TitleGroupLite>
   sendingEditionGroup?: boolean
   initialEditionGroupForm?: UserCreatedEditionGroup | null
 }

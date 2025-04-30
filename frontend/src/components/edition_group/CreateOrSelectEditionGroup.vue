@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import FloatLabel from 'primevue/floatlabel'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
@@ -56,6 +56,7 @@ import {
   createEditionGroup,
   type EditionGroup,
   type EditionGroupInfoLite,
+  type TitleGroupLite,
   type UserCreatedEditionGroup,
 } from '@/services/api/torrentService'
 import { useTitleGroupStore } from '@/stores/titleGroup'
@@ -66,7 +67,7 @@ import { getEditionGroupSlug } from '@/services/helpers'
 let action = ref('select') // create | select
 const step = 1
 
-const titleGroup = useTitleGroupStore()
+const titleGroup = ref<Partial<TitleGroupLite>>({ edition_groups: [] })
 const selected_edition_group = ref<EditionGroupInfoLite | null>(null)
 let creatingEditionGroup = false
 
@@ -91,6 +92,13 @@ const sendEditionGroup = (editionGroupForm?: UserCreatedEditionGroup) => {
     })
   }
 }
+
+onMounted(() => {
+  const titleGroupStore = useTitleGroupStore()
+  if (titleGroupStore.id) {
+    titleGroup.value = titleGroupStore
+  }
+})
 </script>
 <style scoped>
 .title {
