@@ -6,12 +6,15 @@
       </template>
     </Image>
     <ContentContainer v-if="artist.description">
-      <div class="description">{{ artist.description }}</div>
+      <div class="description">
+        <BBCodeRenderer :content="artist.description" />
+      </div>
     </ContentContainer>
   </div>
 </template>
 <script setup lang="ts">
 import ContentContainer from '@/components/ContentContainer.vue'
+import BBCodeRenderer from '@/components/BBCodeRenderer.vue'
 import { type Artist } from '@/services/api/artistService'
 import { Image } from 'primevue'
 

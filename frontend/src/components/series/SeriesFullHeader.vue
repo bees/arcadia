@@ -8,7 +8,9 @@
       </Image>
       <div class="textual-information">
         <div class="name">{{ series.name }}</div>
-        <div class="description">{{ series.description }}</div>
+        <div class="description">
+          <BBCodeRenderer :content="series.description" />
+        </div>
       </div>
     </div>
   </ContentContainer>
@@ -16,6 +18,7 @@
 
 <script setup lang="ts">
 import ContentContainer from '@/components/ContentContainer.vue'
+import BBCodeRenderer from '@/components/BBCodeRenderer.vue'
 import type { Series } from '@/services/api/seriesService'
 import { Image } from 'primevue'
 

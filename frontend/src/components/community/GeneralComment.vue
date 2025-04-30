@@ -15,7 +15,7 @@
         </span>
       </div>
       <div class="comment-body">
-        <div>{{ comment.content }}</div>
+        <BBCodeRenderer :content="comment.content" />
       </div>
     </div>
   </ContentContainer>
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import ContentContainer from '@/components/ContentContainer.vue'
+import BBCodeRenderer from '@/components/BBCodeRenderer.vue'
 import type { TitleGroupCommentHierarchy } from '@/services/api/commentService'
 
 defineProps<{

@@ -107,13 +107,7 @@
     </Column>
     <template #groupheader="slotProps" v-if="isGrouped">
       <div class="edition-group-header">
-        {{
-          getEditionGroupSlug(
-            title_group.edition_groups.find(
-              (group: EditionGroupInfoLite) => group.id === slotProps.data.edition_group_id,
-            ),
-          )
-        }}
+        {{ getEditionGroupSlugById(slotProps.data.edition_group_id) }}
       </div>
     </template>
     <template #expansion="slotProps" v-if="!preview">
@@ -137,13 +131,28 @@
         <AccordionPanel v-if="slotProps.data.description" value="2">
           <AccordionHeader>{{ $t('general.description') }}</AccordionHeader>
           <AccordionContent>
-            <div>{{ slotProps.data.description }}</div>
+            <BBCodeRenderer :content="slotProps.data.description" />
           </AccordionContent>
         </AccordionPanel>
-        <AccordionPanel v-if="slotProps.data.screenshots" value="3">
+        <AccordionPanel
+          v-if="slotProps.data.screenshots && slotProps.data.screenshots.length > 0"
+          value="3"
+        >
           <AccordionHeader>{{ $t('general.screenshots') }}</AccordionHeader>
           <AccordionContent>
-            <div>{{ slotProps.data.screenshots }}</div>
+            <div class="screenshots-container">
+              <div
+                v-for="(screenshot, index) in slotProps.data.screenshots"
+                :key="index"
+                class="screenshot"
+              >
+                <Image :src="screenshot" preview class="screenshot-image">
+                  <template #previewicon>
+                    <i class="pi pi-search"></i>
+                  </template>
+                </Image>
+              </div>
+            </div>
           </AccordionContent>
         </AccordionPanel>
         <AccordionPanel value="4">
@@ -179,6 +188,8 @@
 import { computed, onMounted, ref } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import Image from 'primevue/image'
+import BBCodeRenderer from '@/components/BBCodeRenderer.vue'
 import DOMPurify from 'dompurify'
 import Accordion from 'primevue/accordion'
 import AccordionPanel from 'primevue/accordionpanel'
@@ -191,7 +202,6 @@ import {
   type EditionGroupHierarchyLite,
   type EditionGroupInfoLite,
   type TitleGroupAndAssociatedData,
-  type Torrent,
   type TorrentHierarchyLite,
   type TorrentReport,
 } from '@/services/api/torrentService'
@@ -207,7 +217,7 @@ interface Props {
 const { title_group, preview = false, sortBy = 'edition' } = defineProps<Props>()
 
 const reportTorrentDialogVisible = ref(false)
-const expandedRows = ref<Torrent[]>([])
+const expandedRows = ref<TorrentHierarchyLite[]>([])
 const reportingTorrentId = ref(0)
 const route = useRoute()
 
@@ -230,7 +240,7 @@ const reportTorrent = (id: number) => {
   reportingTorrentId.value = id
   reportTorrentDialogVisible.value = true
 }
-const toggleRow = (torrent: Torrent) => {
+const toggleRow = (torrent: TorrentHierarchyLite) => {
   if (!expandedRows.value.some((expandedTorrent) => expandedTorrent.id === torrent.id)) {
     expandedRows.value = [...expandedRows.value, torrent]
   } else {
@@ -240,13 +250,24 @@ const toggleRow = (torrent: Torrent) => {
 const purifyHtml = (html: string) => {
   return DOMPurify.sanitize(html)
 }
+const getEditionGroupSlugById = (editionGroupId: number): string => {
+  const editionGroup = title_group.edition_groups.find(
+    (group: EditionGroupInfoLite) => group.id === editionGroupId,
+  )
+  return editionGroup ? getEditionGroupSlug(editionGroup) : ''
+}
+
 onMounted(() => {
-  if (route.query.torrentId) {
-    toggleRow(
-      title_group.edition_groups
-        .flatMap((edition_group) => edition_group.torrents)
-        .find((torrent) => torrent.id === parseInt(route.query.torrentId.toString())),
-    )
+  const torrentIdParam = route.query.torrentId?.toString()
+  if (torrentIdParam) {
+    const torrentId = parseInt(torrentIdParam)
+    const matchingTorrent = title_group.edition_groups
+      .flatMap((edition_group) => edition_group.torrents)
+      .find((torrent) => torrent.id === torrentId)
+
+    if (matchingTorrent) {
+      toggleRow(matchingTorrent)
+    }
   }
 })
 const isGrouped = computed(() => sortBy === 'edition')
@@ -272,5 +293,22 @@ const isGrouped = computed(() => sortBy === 'edition')
 .release-name {
   margin-bottom: 10px;
   margin-left: 7px;
+}
+
+.screenshots-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.screenshot {
+  max-width: 200px;
+}
+
+.screenshot-image {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
 }
 </style>
