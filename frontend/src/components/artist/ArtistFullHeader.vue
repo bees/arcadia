@@ -13,13 +13,16 @@
       </Image>
       <div class="textual-information">
         <div class="name">{{ artist.name }}</div>
-        <div class="description">{{ artist.description }}</div>
+        <div class="description">
+          <BBCodeRenderer :content="artist.description" />
+        </div>
       </div>
     </div>
   </ContentContainer>
 </template>
 <script setup lang="ts">
 import ContentContainer from '@/components/ContentContainer.vue'
+import BBCodeRenderer from '@/components/BBCodeRenderer.vue'
 import { type Artist } from '@/services/api/artistService'
 import { Image } from 'primevue'
 
