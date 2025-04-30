@@ -134,11 +134,18 @@
             <BBCodeRenderer :content="slotProps.data.description" />
           </AccordionContent>
         </AccordionPanel>
-        <AccordionPanel v-if="slotProps.data.screenshots && slotProps.data.screenshots.length > 0" value="3">
+        <AccordionPanel
+          v-if="slotProps.data.screenshots && slotProps.data.screenshots.length > 0"
+          value="3"
+        >
           <AccordionHeader>{{ $t('general.screenshots') }}</AccordionHeader>
           <AccordionContent>
             <div class="screenshots-container">
-              <div v-for="(screenshot, index) in slotProps.data.screenshots" :key="index" class="screenshot">
+              <div
+                v-for="(screenshot, index) in slotProps.data.screenshots"
+                :key="index"
+                class="screenshot"
+              >
                 <Image :src="screenshot" preview class="screenshot-image">
                   <template #previewicon>
                     <i class="pi pi-search"></i>
@@ -246,21 +253,21 @@ const purifyHtml = (html: string) => {
 }
 const getEditionGroupSlugById = (editionGroupId: number): string => {
   const editionGroup = title_group.edition_groups.find(
-    (group: EditionGroupInfoLite) => group.id === editionGroupId
-  );
-  return editionGroup ? getEditionGroupSlug(editionGroup) : '';
+    (group: EditionGroupInfoLite) => group.id === editionGroupId,
+  )
+  return editionGroup ? getEditionGroupSlug(editionGroup) : ''
 }
 
 onMounted(() => {
-  const torrentIdParam = route.query.torrentId?.toString();
+  const torrentIdParam = route.query.torrentId?.toString()
   if (torrentIdParam) {
-    const torrentId = parseInt(torrentIdParam);
+    const torrentId = parseInt(torrentIdParam)
     const matchingTorrent = title_group.edition_groups
       .flatMap((edition_group) => edition_group.torrents)
-      .find((torrent) => torrent.id === torrentId);
+      .find((torrent) => torrent.id === torrentId)
 
     if (matchingTorrent) {
-      toggleRow(matchingTorrent);
+      toggleRow(matchingTorrent)
     }
   }
 })
