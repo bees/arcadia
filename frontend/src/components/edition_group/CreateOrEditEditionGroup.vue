@@ -87,7 +87,7 @@
     </div>
     <div class="release-date">
       <label for="release_date" class="block">{{ $t('general.release_date') }}</label>
-      <DatePicker
+      <NaiveDatePicker
         v-model="editionGroupForm.release_date"
         showIcon
         :showOnFocus="false"
@@ -169,7 +169,6 @@ import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
-import DatePicker from 'primevue/datepicker'
 import Message from 'primevue/message'
 import {
   Form,
@@ -180,6 +179,7 @@ import {
 import { useI18n } from 'vue-i18n'
 import { isValidUrl } from '@/services/helpers'
 import type { TitleGroupLite, UserCreatedEditionGroup } from '@/services/api/torrentService'
+import NaiveDatePicker from '../NaiveDatePicker.vue'
 
 interface Props {
   titleGroup: Partial<TitleGroupLite>
@@ -286,25 +286,32 @@ onMounted(() => {
   width: 100%;
   height: 10em;
 }
+
 .select-source {
   width: 150px;
 }
+
 .release-date {
   margin-top: 20px;
 }
+
 .input-list {
   margin-top: 15px;
 }
+
 .input-list .p-component {
   margin-right: 5px;
   margin-bottom: 5px;
 }
+
 .input-list input {
   width: 400px;
 }
+
 .p-floatlabel {
   margin-top: 30px;
 }
+
 .validate-button {
   margin-top: 20px;
 }

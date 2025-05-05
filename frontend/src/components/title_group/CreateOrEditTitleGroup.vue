@@ -132,7 +132,7 @@
       <label for="original_release_date" class="block">{{
         $t('title_group.original_release_date')
       }}</label>
-      <DatePicker
+      <NaiveDatePicker
         v-model="titleGroupForm.original_release_date"
         showIcon
         :showOnFocus="false"
@@ -245,7 +245,7 @@ import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
-import DatePicker from 'primevue/datepicker'
+import NaiveDatePicker from '../NaiveDatePicker.vue'
 import Message from 'primevue/message'
 import { InputNumber } from 'primevue'
 import type {
